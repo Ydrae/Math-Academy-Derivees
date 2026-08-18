@@ -1,0 +1,2478 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Math Academy</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 24px;
+            padding-top: 88px;
+            /* Modifier la couleur de fond de la page ici (bleu marine / bleu nuit) */
+            background: linear-gradient(180deg, #2a3f6b 0%, #1e2d4a 55%, #243552 100%);
+            color: #e8ecf2;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 8px;
+            color: #f0f3f8;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #a8b8cc;
+            margin-bottom: 32px;
+        }
+
+        /* ================================================================
+         * Barre du joueur (niveau + expérience) — en haut à gauche
+         * ================================================================ */
+        #user-hud {
+            position: fixed;
+            top: 16px;
+            left: 16px;
+            display: flex;
+            align-items: center;
+            z-index: 100;
+            filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.18));
+        }
+
+        /* Modifier la taille de l'étoile ici */
+        .xp-star {
+            position: relative;
+            width: 80px;
+            height: 80px;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 3;
+        }
+
+        .xp-star__shape {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(145deg, #ab47bc, #7b1fa2);
+            clip-path: polygon(
+                50% 0%, 61% 35%, 98% 35%, 68% 57%,
+                79% 91%, 50% 70%, 21% 91%, 32% 57%,
+                2% 35%, 39% 35%
+            );
+            border: none;
+            box-shadow:
+                inset 0 2px 5px rgba(255, 255, 255, 0.55),
+                inset 0 -3px 6px rgba(0, 0, 0, 0.25),
+                0 0 0 2px #eceff1,
+                0 0 0 3px #b0bec5,
+                0 2px 6px rgba(0, 0, 0, 0.22);
+        }
+
+        .xp-star__level {
+            position: relative;
+            z-index: 1;
+            font-size: 26px;
+            font-weight: bold;
+            color: #fff;
+            text-shadow: 0 1px 3px rgba(0, 0, 0, 0.45);
+        }
+
+        /* Jauge d'expérience (fond brun, relief grisâtre) */
+        /* Modifier la largeur de la barre d'expérience ici (desktop) */
+        .xp-bar {
+            position: relative;
+            width: min(270px, calc(100vw - 200px));
+            height: 38px;
+            /* Modifier le chevauchement étoile / barre ici (valeur négative = plus recouvert) */
+            margin-left: -31px;
+            margin-bottom: 5px;
+            background: linear-gradient(180deg, #8d6e63 0%, #6d4c41 55%, #5d4037 100%);
+            border-radius: 0 19px 19px 0;
+            overflow: hidden;
+            box-shadow:
+                inset 0 2px 4px rgba(255, 255, 255, 0.15),
+                inset 0 -2px 5px rgba(0, 0, 0, 0.35),
+                0 0 0 3px #eceff1,
+                0 0 0 5px #b0bec5;
+        }
+
+        .xp-bar__fill {
+            position: absolute;
+            top: 3px;
+            left: 3px;
+            bottom: 3px;
+            width: 0%;
+            border-radius: 0 15px 15px 0;
+            background: linear-gradient(
+                180deg,
+                #64b5f6 0%,
+                #42a5f5 35%,
+                #1e88e5 65%,
+                #1565c0 100%
+            );
+            box-shadow:
+                inset 0 2px 4px rgba(255, 255, 255, 0.45),
+                inset 0 -2px 5px rgba(0, 0, 0, 0.25);
+            transition: width 0.35s ease;
+        }
+
+        .xp-bar__text {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 15px;
+            font-weight: bold;
+            color: #fff;
+            text-shadow:
+                -1px -1px 0 rgba(0, 0, 0, 0.55),
+                1px -1px 0 rgba(0, 0, 0, 0.55),
+                -1px 1px 0 rgba(0, 0, 0, 0.55),
+                1px 1px 0 rgba(0, 0, 0, 0.55);
+            pointer-events: none;
+        }
+
+        /* ================================================================
+         * Compteur de déblocages en série — en haut à droite
+         * ================================================================ */
+        /* Modifier les couleurs du compteur « déblocages en série » ici */
+        #streak-counter {
+            position: fixed;
+            top: 25px;
+            right: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            height: 38px;
+            padding: 0 22px;
+            background: linear-gradient(180deg, #eceff1 0%, #cfd8dc 100%);
+            border-radius: 999px;
+            box-shadow:
+                inset 0 1px 3px rgba(255, 255, 255, 0.75),
+                inset 0 -1px 3px rgba(0, 0, 0, 0.1),
+                0 0 0 2px #eceff1,
+                0 0 0 4px #b0bec5,
+                0 2px 6px rgba(0, 0, 0, 0.12);
+            z-index: 100;
+            font-size: 15px;
+            font-weight: bold;
+            color: #37474f;
+        }
+
+        .streak-flame {
+            font-size: 20px;
+            line-height: 1;
+        }
+
+        #streak-count {
+            font-size: 20px;
+            min-width: 1ch;
+        }
+
+        .streak-label {
+            font-weight: normal;
+            font-size: 13px;
+            color: #546e7a;
+        }
+
+        /* ================================================================
+         * Graphe — zone de travail (parchemin / sentier de terre)
+         * ================================================================ */
+        /* Modifier les couleurs de la zone de travail ici */
+        #graph-container {
+            position: relative;
+            min-height: 400px;
+            max-width: 1300px; /* était 1100 */
+            margin: 0 auto;
+            --node-size: 98%;
+            background-color: #e4d9c8;
+            background-image:
+                radial-gradient(ellipse 120% 80% at 15% 20%, rgba(210, 186, 150, 0.45) 0%, transparent 55%),
+                radial-gradient(ellipse 90% 70% at 85% 35%, rgba(196, 170, 132, 0.35) 0%, transparent 50%),
+                radial-gradient(ellipse 100% 60% at 45% 85%, rgba(180, 155, 118, 0.3) 0%, transparent 48%),
+                linear-gradient(168deg, #ebe2d2 0%, #ddd0bc 28%, #e8dece 52%, #d5c8b2 78%, #e2d6c4 100%);
+            background-attachment: local;
+            border: 1px solid rgba(141, 110, 99, 0.28);
+            border-radius: 12px;
+            box-shadow:
+                0 4px 24px rgba(0, 0, 0, 0.28),
+                inset 0 1px 0 rgba(255, 255, 255, 0.35);
+            overflow: visible;
+        }
+
+        /* Lignes transversales — calque le plus bas */
+        #dividers-layer {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        /* Modifier l'apparence des lignes transversales ici */
+        .graph-divider {
+            position: absolute;
+            left: 0;
+            right: 0;
+            height: 0;
+            border-top: 4px solid rgba(109, 76, 65, 0.2);
+        }
+
+        .graph-divider__label {
+            position: absolute;
+            left: 18px;
+            bottom: 7px;
+            font-size: 11px;
+            font-weight: normal;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+            color: rgba(93, 64, 55, 0.42);
+        }
+
+        #connections {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        #connections line {
+            stroke: #888;
+            stroke-width: 2;
+            marker-end: url(#arrowhead);
+        }
+
+        #nodes-layer {
+            position: relative;
+            width: 100%;
+            min-height: 400px;
+            z-index: 2;
+        }
+
+        .node-wrapper {
+            position: absolute;
+            width: var(--node-size);
+            z-index: 2;
+            overflow: visible;
+            transition:
+                width 0.45s cubic-bezier(0.4, 0, 0.2, 1),
+                left 0.45s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .node-wrapper:hover,
+        .node-wrapper.is-expanded {
+            z-index: 20;
+        }
+
+        /* Bulle niveau/max reliée au nœud par une pointe */
+        .node-badge-bubble {
+            position: relative;
+            width: fit-content;
+            max-width: 100%;
+            margin: 0 auto 6px;
+            padding: 5px 14px;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: bold;
+            text-align: center;
+            background: linear-gradient(180deg, #fafafa, #eeeeee);
+            border: 2px solid #cfd8dc;
+            box-shadow:
+                inset 0 1px 2px rgba(255, 255, 255, 0.9),
+                0 2px 4px rgba(0, 0, 0, 0.12);
+        }
+
+        .node-badge-bubble::after {
+            content: '';
+            position: absolute;
+            left: 50%;
+            bottom: -9px;
+            transform: translateX(-50%);
+            border-left: 9px solid transparent;
+            border-right: 9px solid transparent;
+            border-top: 9px solid #cfd8dc;
+        }
+
+        .node-badge-bubble::before {
+            content: '';
+            position: absolute;
+            left: 50%;
+            bottom: -6px;
+            transform: translateX(-50%);
+            border-left: 7px solid transparent;
+            border-right: 7px solid transparent;
+            border-top: 7px solid #eeeeee;
+            z-index: 1;
+        }
+
+        /* --- Nœud verrouillé --- */
+        /* Modifier la couleur rouge des nœuds verrouillés ici */
+        .node--locked {
+            width: var(--node-size);
+            height: var(--node-size);
+            border-radius: 50%;
+            background-color: #e53935;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: clamp(12px, calc(var(--node-size) * 0.08), 18px);
+            font-weight: bold;
+            color: #fff;
+            cursor: pointer;
+            user-select: none;
+            text-align: center;
+            padding: clamp(10px, calc(var(--node-size) * 0.08), 20px) clamp(9px, calc(var(--node-size) * 0.08), 18px);
+            line-height: 1.28;
+            hyphens: auto;
+            overflow-wrap: break-word;
+            word-break: break-word;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
+            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.22);
+            transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.25s;
+        }
+
+        /* Modifier la couleur orange « prêt à déverrouiller » ici (plus foncé que le doré) */
+        .node--locked.node--ready {
+            background-color: #e65100;
+            box-shadow: 0 4px 16px rgba(230, 81, 0, 0.45);
+        }
+
+        .node--locked:hover {
+            transform: scale(1.05);
+        }
+
+        /* --- Nœud déverrouillé (capsule extensible, forme pillule) --- */
+        /* Modifier la taille / couleur des nœuds déverrouillés ici */
+        .node-unlocked {
+            display: flex;
+            align-items: center;
+            height: var(--node-size);
+            width: var(--node-size);
+            border-radius: 999px;
+            background-color: #43a047;
+            overflow: hidden;
+            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.22);
+            transition:
+                width 0.45s cubic-bezier(0.4, 0, 0.2, 1),
+                background 0.3s ease;
+        }
+
+        /* Modifier la couleur dorée (niveau max atteint) ici */
+        .node-unlocked.node--golden {
+            background: linear-gradient(145deg, #ffd54f, #ffb300);
+            box-shadow: 0 4px 18px rgba(255, 179, 0, 0.45);
+        }
+
+        .node-unlocked.expand-right {
+            flex-direction: row;
+        }
+
+        .node-unlocked.expand-left {
+            flex-direction: row-reverse;
+        }
+
+        .node-wrapper.is-expanded .node-unlocked,
+        .node-wrapper.is-hovering .node-unlocked {
+            width: calc(var(--node-size) + var(--levels-expand, 0px));
+        }
+
+        .node-disk {
+            flex: 0 0 var(--node-size);
+            width: var(--node-size);
+            height: var(--node-size);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: clamp(12px, calc(var(--node-size) * 0.08), 18px);
+            font-weight: bold;
+            color: #fff;
+            text-align: center;
+            padding: clamp(10px, calc(var(--node-size) * 0.08), 20px) clamp(9px, calc(var(--node-size) * 0.08), 18px);
+            line-height: 1.28;
+            hyphens: auto;
+            overflow-wrap: break-word;
+            word-break: break-word;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+            cursor: pointer;
+            user-select: none;
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+        }
+
+        /* Image de fond optionnelle sur un nœud verrouillé */
+        .node--locked.has-image {
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+        }
+
+        /* Liste verticale des niveaux — fondu après le début de l'allongement */
+        .node-levels {
+            display: flex;
+            flex-direction: column;
+            align-items: stretch;
+            flex: 0 0 0;
+            width: 0;
+            overflow: hidden;
+            padding: 0;
+            opacity: 0;
+            visibility: hidden;
+            transition:
+                flex-basis 0.45s cubic-bezier(0.4, 0, 0.2, 1),
+                width 0.45s cubic-bezier(0.4, 0, 0.2, 1),
+                opacity 0.15s ease,
+                visibility 0s linear 0.45s,
+                padding 0.45s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .node-wrapper.is-expanded .node-levels,
+        .node-wrapper.is-hovering .node-levels {
+            flex: 0 0 var(--levels-expand, 0px);
+            width: var(--levels-expand, 0px);
+            opacity: 1;
+            visibility: visible;
+            transition:
+                flex-basis 0.45s cubic-bezier(0.4, 0, 0.2, 1),
+                width 0.45s cubic-bezier(0.4, 0, 0.2, 1),
+                opacity 0.32s ease 0.22s,
+                visibility 0s linear 0s,
+                padding 0.45s cubic-bezier(0.4, 0, 0.2, 1) 0.06s;
+        }
+
+        .node-unlocked.expand-right .node-levels {
+            padding: 0;
+        }
+
+        .node-wrapper.is-expanded .node-unlocked.expand-right .node-levels,
+        .node-wrapper.is-hovering .node-unlocked.expand-right .node-levels {
+            padding: 12px 32px 12px 10px;
+        }
+
+        .node-unlocked.expand-left .node-levels {
+            padding: 0;
+        }
+
+        .node-wrapper.is-expanded .node-unlocked.expand-left .node-levels,
+        .node-wrapper.is-hovering .node-unlocked.expand-left .node-levels {
+            padding: 12px 10px 12px 32px;
+        }
+
+        .level-chip {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            gap: 10px;
+            width: max-content;
+            min-width: 100%;
+            padding: 10px 8px;
+            border: none;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.28);
+            border-radius: 0;
+            background: transparent;
+            color: #fff;
+            cursor: pointer;
+            text-align: left;
+            white-space: nowrap;
+            transition: background 0.15s;
+        }
+
+        .level-chip:last-child {
+            border-bottom: none;
+        }
+
+        .level-chip:hover {
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        .level-chip.is-active {
+            background: rgba(255, 255, 255, 0.92);
+            color: #2e7d32;
+            border-radius: 8px;
+            border-bottom-color: transparent;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+        }
+
+        .node-unlocked.node--golden .level-chip.is-active {
+            color: #e65100;
+        }
+
+        .level-chip__number {
+            flex: 0 0 auto;
+            font-size: 17px;
+            font-weight: bold;
+            min-width: 22px;
+        }
+
+        .level-chip__title {
+            flex: 1 1 auto;
+            font-size: 13px;
+            font-weight: normal;
+            line-height: 1.32;
+            white-space: nowrap;
+        }
+
+        /* --- Modales --- */
+        .overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 99;
+        }
+
+        .overlay.hidden {
+            display: none;
+        }
+
+        .modal {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.25);
+            z-index: 100;
+            overflow: hidden;
+        }
+
+        .modal.hidden {
+            display: none;
+        }
+
+        .modal__close {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            width: 48px;
+            height: 48px;
+            background: rgba(0, 0, 0, 0.06);
+            border: none;
+            border-radius: 50%;
+            font-size: 28px;
+            line-height: 1;
+            cursor: pointer;
+            color: #444;
+            z-index: 3;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal__close:hover {
+            background: rgba(0, 0, 0, 0.12);
+        }
+
+        /* Modale de déverrouillage — largeur adaptée au titre */
+        .modal--unlock {
+            width: fit-content;
+            max-width: min(480px, calc(100vw - 24px));
+            min-width: 0;
+            padding: 22px 24px 20px;
+            border: 3px solid #ff9800;
+            background: linear-gradient(180deg, #fffaf5 0%, #fff 100%);
+        }
+
+        .modal--unlock h2 {
+            margin: 0 0 18px;
+            font-size: 18px;
+            line-height: 1.3;
+            padding-right: 36px;
+            color: #e65100;
+            white-space: nowrap;
+        }
+
+        .btn-debloquer {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            width: 100%;
+            padding: 14px 16px;
+            font-size: 16px;
+            font-weight: bold;
+            color: #fff;
+            background: linear-gradient(135deg, #ff6b35 0%, #f7931e 50%, #ffb347 100%);
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            margin-bottom: 20px;
+            box-shadow: 0 5px 16px rgba(255, 107, 53, 0.4);
+            letter-spacing: 0.3px;
+            transition: transform 0.15s ease, box-shadow 0.15s ease;
+        }
+
+        .btn-debloquer__icon {
+            flex: 0 0 auto;
+            width: 22px;
+            height: 22px;
+            display: block;
+        }
+
+        .btn-debloquer:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 28px rgba(255, 107, 53, 0.55);
+        }
+
+        .unlock-code-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: nowrap;
+        }
+
+        .unlock-code-row label {
+            font-weight: bold;
+            white-space: nowrap;
+            color: #bf360c;
+        }
+
+        .unlock-code-row input {
+            flex: 0 0 auto;
+            width: 118px;
+            padding: 10px 10px;
+            font-size: 15px;
+            border: 2px solid #ffcc80;
+            border-radius: 8px;
+            background: #fff;
+        }
+
+        .unlock-code-row input:focus {
+            outline: none;
+            border-color: #ff9800;
+            box-shadow: 0 0 0 3px rgba(255, 152, 0, 0.25);
+        }
+
+        .btn-validate-code {
+            flex: 0 0 auto;
+            padding: 10px 14px;
+            font-size: 14px;
+            font-weight: bold;
+            color: #fff;
+            background: linear-gradient(180deg, #ffa726, #fb8c00);
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            box-shadow: 0 3px 10px rgba(251, 140, 0, 0.4);
+            white-space: nowrap;
+        }
+
+        .btn-validate-code:hover {
+            background: linear-gradient(180deg, #ffb74d, #f57c00);
+        }
+
+        .unlock-error {
+            color: #d84315;
+            font-size: 14px;
+            margin-top: 10px;
+            min-height: 20px;
+            font-weight: bold;
+        }
+
+        /* Modale iframe (format A4) */
+        .modal--content {
+            width: min(900px, calc(100vw - 80px));
+            height: min(calc(100vh - 48px), calc(min(794px, calc(100vw - 80px)) * 1.414));
+            border: 2px solid #d6c47f;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .modal--content .modal__header {
+            flex: 0 0 auto;
+            padding: 14px 60px 10px 20px;
+            font-size: 15px;
+            font-weight: bold;
+            color: #2e7d32;
+            border-bottom: 1px solid #e0e0e0;
+            background: #f9fdf9;
+        }
+
+        .modal--content .modal__body {
+            flex: 1 1 auto;
+            min-height: 0;
+            overflow: hidden;
+        }
+
+        .modal--content iframe {
+            display: block;
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        .modal__footer-close {
+            display: none;
+            flex: 0 0 auto;
+            width: 100%;
+            padding: 16px;
+            font-size: 17px;
+            font-weight: bold;
+            color: #fff;
+            background: #43a047;
+            border: none;
+            cursor: pointer;
+        }
+
+        /* Ordinateur — champ code élargi, aligné avec le bouton Déblocage */
+        @media (min-width: 769px) {
+            .unlock-code-row input {
+                flex: 1 1 auto;
+                width: auto;
+                min-width: 118px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 4px;
+                padding-top: 76px;
+            }
+
+            h1 {
+                font-size: 1.35rem;
+                margin-bottom: 4px;
+            }
+
+            .subtitle {
+                font-size: 0.82rem;
+                margin-bottom: 10px;
+                padding: 0 2px;
+            }
+
+            /* Zone brune pleine largeur (petit padding) ; hauteur par défilement */
+            #graph-viewport {
+                width: calc(100vw - 8px);
+                margin: 0 4px;
+                overflow: visible;
+                min-height: 320px;
+                padding: 0;
+            }
+
+            #graph-container {
+                max-width: none;
+                margin: 0;
+                left: 50%;
+                transform-origin: top center;
+                position: relative;
+            }
+
+            /* HUD fixé en haut — ne défile pas avec la page */
+            #user-hud {
+                position: fixed;
+                top: 5px;
+                left: 10px;
+                z-index: 100;
+            }
+
+            .xp-star {
+                width: 55px;
+                height: 55px;
+            }
+
+            .xp-star__level {
+                font-size: 19px;
+            }
+
+            .xp-bar {
+                width: min(108px, calc(100vw - 108px));
+                height: 20px;
+                margin-left: -20px;
+                margin-bottom: -5px;
+            }
+
+            .xp-bar__text {
+                font-size: 11px;
+            }
+
+            #streak-counter {
+                position: fixed;
+                top: 20px;
+                right: 10px;
+                left: auto;
+                bottom: auto;
+                z-index: 100;
+                height: 30px;
+                padding: 0 10px;
+                font-size: 12px;
+                gap: 5px;
+            }
+
+            .streak-flame {
+                font-size: 16px;
+            }
+
+            #streak-count {
+                font-size: 16px;
+            }
+
+            .streak-label {
+                font-size: 12px;
+            }
+
+            /* Extension au tap uniquement (pas au survol) */
+            .node-wrapper.is-hovering .node-unlocked,
+            .node-wrapper.is-hovering .node-levels {
+                width: var(--node-size);
+            }
+
+            .node-wrapper.is-hovering .node-unlocked {
+                width: var(--node-size);
+            }
+
+            .node-wrapper.is-hovering .node-levels,
+            .node-wrapper.is-hovering .node-unlocked.expand-right .node-levels,
+            .node-wrapper.is-hovering .node-unlocked.expand-left .node-levels {
+                flex: 0 0 0;
+                width: 0;
+                opacity: 0;
+                visibility: hidden;
+                padding: 0;
+            }
+
+            .node-wrapper.is-expanded .node-unlocked {
+                width: calc(var(--node-size) + var(--levels-expand, 0px)) !important;
+            }
+
+            .node-wrapper.is-expanded .node-levels,
+            .node-wrapper.is-expanded .node-unlocked.expand-right .node-levels,
+            .node-wrapper.is-expanded .node-unlocked.expand-left .node-levels {
+                flex: 0 0 var(--levels-expand, 0px) !important;
+                width: var(--levels-expand, 0px) !important;
+                opacity: 1 !important;
+                visibility: visible !important;
+                padding: 8px 16px 8px 6px !important;
+            }
+
+            .node-wrapper.is-expanded .node-unlocked.expand-left .node-levels {
+                padding: 8px 6px 8px 16px !important;
+            }
+
+            .level-chip {
+                padding: 5px 7px !important;
+                gap: 5px !important;
+                font-size: 10px !important;
+                min-width: 0 !important;
+            }
+
+            .level-chip__number {
+                font-size: 11px !important;
+                min-width: 14px !important;
+            }
+
+            .level-chip__title {
+                font-size: 10px !important;
+                line-height: 1.2 !important;
+            }
+
+            .node-levels {
+                width: auto !important;
+                flex: 0 0 auto !important;
+                padding: 0 !important;
+            }
+
+            .node-unlocked {
+                width: auto !important;
+            }
+
+            .node-wrapper.is-expanded .node-unlocked {
+                width: calc(var(--node-size) + var(--levels-expand, 0px)) !important;
+            }
+
+            .node-wrapper.is-expanded .node-levels,
+            .node-wrapper.is-expanded .node-unlocked.expand-right .node-levels,
+            .node-wrapper.is-expanded .node-unlocked.expand-left .node-levels {
+                width: var(--levels-expand, 0px) !important;
+            }
+
+            .modal--unlock {
+                width: fit-content;
+                max-width: calc(100vw - 32px);
+                min-width: 0;
+                padding: 14px 16px 12px;
+                border-width: 2px;
+            }
+
+            .modal--unlock h2 {
+                white-space: nowrap;
+                font-size: 13px;
+                margin-bottom: 12px;
+                padding-right: 28px;
+            }
+
+            .modal--unlock .modal__close {
+                top: 4px;
+                right: 4px;
+                width: 32px;
+                height: 32px;
+                font-size: 22px;
+            }
+
+            .modal--unlock .btn-debloquer {
+                padding: 10px 12px;
+                font-size: 14px;
+                margin-bottom: 14px;
+                gap: 8px;
+            }
+
+            .modal--unlock .btn-debloquer__icon {
+                width: 18px;
+                height: 18px;
+            }
+
+            .modal--unlock .unlock-code-row {
+                gap: 6px;
+            }
+
+            .modal--unlock .unlock-code-row label {
+                font-size: 13px;
+            }
+
+            .modal--unlock .unlock-code-row input {
+                width: 88px;
+                padding: 7px 8px;
+                font-size: 13px;
+            }
+
+            .modal--unlock .btn-validate-code {
+                padding: 7px 10px;
+                font-size: 12px;
+            }
+
+            .modal--unlock .unlock-error {
+                font-size: 12px;
+                margin-top: 8px;
+                min-height: 16px;
+            }
+            /* Iframe modale (format A4) — plein écran sur mobile, pas de bordure */
+            .modal--content {
+                top: 0;
+                left: 0;
+                transform: none;
+                width: 100vw;
+                height: 93vh;
+                max-width: 100vw;
+                max-height: 93vh;
+                border-radius: 0;
+                border: none;
+            }
+
+            .modal__footer-close {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Interface joueur (niveau + expérience) -->
+    <div id="user-hud">
+        <div class="xp-star">
+            <div class="xp-star__shape"></div>
+            <span id="user-level" class="xp-star__level">1</span>
+        </div>
+        <div class="xp-bar">
+            <div id="xp-fill" class="xp-bar__fill"></div>
+            <span id="xp-text" class="xp-bar__text">0 / 1000</span>
+        </div>
+    </div>
+
+    <!-- Compteur de déblocages consécutifs réussis -->
+    <div id="streak-counter">
+        <span class="streak-flame" aria-hidden="true">🔥</span>
+        <span id="streak-count">0</span>
+        <span class="streak-label">Déblocages en série</span>
+    </div>
+
+    <h1>Math Academy</h1>
+    <h2 class="subtitle">
+        Maîtrise des bases algébriques
+    </h2>
+    <p class="subtitle">
+        Temporaire : code d'ouverture 1 par défaut.
+    </p>
+
+    <div id="graph-viewport">
+        <div id="graph-container">
+            <div id="dividers-layer"></div>
+            <svg id="connections">
+                <defs>
+                    <marker id="arrowhead" markerWidth="8" markerHeight="6"
+                            refX="7" refY="3" orient="auto">
+                        <polygon points="0 0, 8 3, 0 6" fill="#888"/>
+                    </marker>
+                </defs>
+            </svg>
+            <div id="nodes-layer"></div>
+        </div>
+    </div>
+
+    <div id="overlay" class="overlay hidden"></div>
+
+    <div id="unlock-modal" class="modal modal--unlock hidden">
+        <button class="modal__close" aria-label="Fermer">&times;</button>
+        <h2>Obtiens le code secret en réussisant le test !</h2>
+        <button id="btn-debloquer" class="btn-debloquer" type="button">
+            <svg class="btn-debloquer__icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                <path fill="currentColor" d="M7 10V7a5 5 0 0 1 10 0v3H7z"/>
+                <rect x="5" y="10" width="14" height="11" rx="2.5"/>
+            </svg>
+            Déblocage
+        </button>
+        <div class="unlock-code-row">
+            <label for="unlock-code-input">Code secret :</label>
+            <input id="unlock-code-input" type="text" autocomplete="off" placeholder="Entrez le code">
+            <button id="btn-validate-code" class="btn-validate-code" type="button">Valider</button>
+        </div>
+        <p id="unlock-error" class="unlock-error" aria-live="polite"></p>
+    </div>
+
+    <div id="content-modal" class="modal modal--content hidden">
+        <button class="modal__close" aria-label="Fermer">&times;</button>
+        <div id="content-modal-header" class="modal__header"></div>
+        <div id="content-modal-body" class="modal__body"></div>
+        <button id="content-modal-footer-close" class="modal__footer-close" type="button">Fermer</button>
+    </div>
+
+    <script>
+        /* ===================================================================
+         *  PARTIE TECHNIQUE
+         * =================================================================== */
+
+        const NODE_STATE = { LOCKED: 'locked', UNLOCKED: 'unlocked' };
+
+        const NODE_SIZE_RATIO = 0.18;
+        const BADGE_TOTAL_HEIGHT = 44;
+        const GRAPH_BOTTOM_PADDING = 120;
+        /* Marge à droite du nœud le plus à droite (largeur zone brune mobile) */
+        const GRAPH_RIGHT_PADDING = 40;
+        const GRAPH_BASE_WIDTH = 1300;
+
+        /* Modifier les constantes d'expérience ici */
+        const XP_PER_NODE_LEVEL = 600;
+        const XP_PER_USER_LEVEL = 1000;
+        const SAVE_KEY = 'math_academy_save';
+
+        const nodeRegistry = new Map();
+        let activeUnlockNode = null;
+        let streakCount = 0;
+        /* L'expérience ne diminue jamais : on mémorise le maximum atteint */
+        let highestTotalXP = 0;
+
+        const nodesLayer = document.getElementById('nodes-layer');
+        const graphViewport = document.getElementById('graph-viewport');
+        const dividersLayer = document.getElementById('dividers-layer');
+        const connectionsSvg = document.getElementById('connections');
+        const graphContainer = document.getElementById('graph-container');
+        const overlay = document.getElementById('overlay');
+        const unlockModal = document.getElementById('unlock-modal');
+        const btnDebloquer = document.getElementById('btn-debloquer');
+        const btnValidateCode = document.getElementById('btn-validate-code');
+        const unlockCodeInput = document.getElementById('unlock-code-input');
+        const unlockError = document.getElementById('unlock-error');
+        const contentModal = document.getElementById('content-modal');
+        const contentModalHeader = document.getElementById('content-modal-header');
+        const contentModalBody = document.getElementById('content-modal-body');
+        const contentModalFooterClose = document.getElementById('content-modal-footer-close');
+        const userLevelEl = document.getElementById('user-level');
+        const xpFillEl = document.getElementById('xp-fill');
+        const xpTextEl = document.getElementById('xp-text');
+        const streakCountEl = document.getElementById('streak-count');
+
+        /* Modifier l'espace après les titres de niveaux au survol ici */
+        const LEVELS_EXPAND_EXTRA = 32;
+
+        function isMobileLayout() {
+            return window.matchMedia('(max-width: 768px)').matches;
+        }
+
+        function getGraphUsableWidth() {
+            if (!graphContainer) {
+                return GRAPH_BASE_WIDTH;
+            }
+            if (isMobileLayout()) {
+                return GRAPH_BASE_WIDTH;
+            }
+            return graphContainer.clientWidth || GRAPH_BASE_WIDTH;
+        }
+
+        function getNodeSize() {
+            const usableWidth = getGraphUsableWidth();
+            return Math.max(120, usableWidth * NODE_SIZE_RATIO);
+        }
+
+        function setGraphNodeSizeVariable() {
+            const nodeSize = getNodeSize();
+            if (graphContainer) {
+                graphContainer.style.setProperty('--node-size', nodeSize + 'px');
+            }
+        }
+
+        function normalizeNodeXPercent(x) {
+            const numeric = Number(x);
+            if (Number.isNaN(numeric)) {
+                return 0;
+            }
+            if (numeric >= 0 && numeric <= 100) {
+                return numeric;
+            }
+            return Math.max(0, Math.min(100, (numeric / GRAPH_BASE_WIDTH) * 100));
+        }
+
+        function getNodeLeftFromPercent(xPercent) {
+            const usableWidth = getGraphUsableWidth();
+            const nodeSize = getNodeSize();
+            const maxLeft = Math.max(usableWidth - nodeSize, 0);
+            return (Math.max(0, Math.min(100, xPercent)) / 100) * maxLeft;
+        }
+
+        function updateNodeHorizontalPosition(nodeData) {
+            nodeData.x = getNodeLeftFromPercent(nodeData.xPercent);
+            nodeData.wrapper.style.left = nodeData.x + 'px';
+        }
+
+        function updateAllNodePositions() {
+            nodeRegistry.forEach(function (node) {
+                updateNodeHorizontalPosition(node);
+                if (node.wrapper.classList.contains('is-hovering') ||
+                    node.wrapper.classList.contains('is-expanded')) {
+                    applyNodeExpansion(node);
+                }
+            });
+        }
+
+        function isDesktopHover() {
+            return window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+        }
+
+        function measureNodeRightEdge(node) {
+            const nodeSize = getNodeSize();
+            let right = Number(node.x) + nodeSize;
+
+            const wrapperLeft = parseFloat(node.wrapper.style.left);
+            const left = isNaN(wrapperLeft) ? Number(node.x) : wrapperLeft;
+            const wrapperWidth = node.wrapper.offsetWidth || nodeSize;
+            right = Math.max(right, left + wrapperWidth);
+
+            if (node.wrapper.scrollWidth > wrapperWidth) {
+                right = Math.max(right, left + node.wrapper.scrollWidth);
+            }
+
+            if (node.state === NODE_STATE.UNLOCKED) {
+                measureLevelsExpandWidth(node);
+                const expandW = node.levelsExpandWidth || 0;
+                right = Math.max(right, Number(node.x) + nodeSize + expandW);
+            }
+
+            return right;
+        }
+
+        /* Largeur utile du graphe : englobe tous les nœuds avec une marge à droite */
+        function getGraphContentWidth() {
+            let width = getNodeSize();
+
+            nodeRegistry.forEach(function (node) {
+                width = Math.max(width, measureNodeRightEdge(node));
+            });
+            return width + GRAPH_RIGHT_PADDING;
+        }
+
+        /* Ajuste le graphe : largeur plein écran, hauteur par défilement (téléphone) */
+        function applyMobileGraphFit() {
+            if (!graphViewport) return;
+
+            setGraphNodeSizeVariable();
+
+            if (!isMobileLayout()) {
+                graphContainer.style.width = '';
+                graphContainer.style.left = '';
+                graphContainer.style.marginLeft = '';
+                graphContainer.style.transform = '';
+                graphContainer.style.transformOrigin = '';
+                graphViewport.style.height = '';
+                // restore normal viewport scaling
+                const meta = document.querySelector('meta[name=viewport]');
+                if (meta) meta.setAttribute('content', 'width=device-width, initial-scale=1.0');
+                updateAllNodePositions();
+                return;
+            }
+
+            // Mobile: keep the brown work area at a fixed base width
+            const baseWidth = GRAPH_BASE_WIDTH;
+            graphContainer.style.width = baseWidth + 'px';
+            graphContainer.style.transformOrigin = 'top left';
+            graphContainer.style.left = '0';
+            graphContainer.style.margin = '0';
+            graphContainer.style.position = 'relative';
+
+            // Compute scale so the brown work area plus horizontal padding/margins fits in the viewport initially
+            const vpWidth = graphViewport.clientWidth || window.innerWidth;
+            const vpStyle = window.getComputedStyle(graphViewport);
+            const paddingLeft = parseFloat(vpStyle.paddingLeft) || 0;
+            const paddingRight = parseFloat(vpStyle.paddingRight) || 0;
+            const marginLeft = parseFloat(vpStyle.marginLeft) || 0;
+            const marginRight = parseFloat(vpStyle.marginRight) || 0;
+            const horizontalExtra = paddingLeft + paddingRight + marginLeft + marginRight;
+            const desiredWidth = baseWidth +0*horizontalExtra;
+            const scale = Math.min(1, vpWidth / desiredWidth);
+
+            const offset = Math.max(0, (vpWidth - (baseWidth * scale)) / 2);
+            const translateX = offset / Math.max(scale, 0.0001);
+            graphContainer.style.transform = 'translateX(' + translateX + 'px) scale(' + scale + ')';
+            if (graphViewport && graphViewport.style) {
+                graphViewport.style.overflow = 'hidden';
+            }
+
+            // Prevent the user from zooming out past the initial view
+            const meta = document.querySelector('meta[name=viewport]');
+            if (meta) {
+                meta.setAttribute('content', 'width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=3');
+            }
+
+            graphViewport.style.height = '';
+            setGraphNodeSizeVariable();
+            updateAllNodePositions();
+        }
+
+        function collapseAllExpandedNodes() {
+            nodeRegistry.forEach(function (node) {
+                if (node.wrapper.classList.contains('is-expanded')) {
+                    collapseNodeWrapper(node);
+                }
+            });
+        }
+
+        /* Modifier la taille des nœuds ici (doit correspondre au CSS .node--locked / .node-unlocked) */
+
+        /* Ajuste la taille du texte selon la longueur du titre (lisibilité dans le cercle) */
+        function applyNodeTitleSizing(element, title) {
+            element.textContent = title;
+            element.style.fontSize = '';
+            element.style.lineHeight = '';
+            element.style.padding = '';
+
+            if (title.length > 32) {
+                element.style.fontSize = '14px';
+                element.style.lineHeight = '1.3';
+                element.style.padding = '22px 16px';
+            } else if (title.length > 22) {
+                element.style.fontSize = '16px';
+                element.style.lineHeight = '1.28';
+                element.style.padding = '20px 16px';
+            }
+        }
+
+        /* -------------------------------------------------------------------
+         *  createHorizontalLine(y, title)
+         *  Ligne transversale brune discrète + titre en bas à gauche.
+         *  Calque le plus bas (sous les connexions et les nœuds).
+         * ------------------------------------------------------------------- */
+        function createHorizontalLine(y, title) {
+            const line = document.createElement('div');
+            line.className = 'graph-divider';
+            line.style.top = y + 'px';
+
+            const label = document.createElement('span');
+            label.className = 'graph-divider__label';
+            label.textContent = title;
+            line.appendChild(label);
+
+            dividersLayer.appendChild(line);
+            return line;
+        }
+
+        /* Mesure la largeur nécessaire pour afficher les niveaux sur une seule ligne */
+        function measureLevelsExpandWidth(nodeData) {
+            const panel = nodeData.levelsPanel;
+            if (!panel) return 180;
+
+            const probe = document.createElement('div');
+            probe.className = 'node-levels';
+            const pad = nodeData.expandDirection === 'left'
+                ? '12px 10px 12px 32px'
+                : '12px 32px 12px 10px';
+            probe.style.cssText =
+                'position:absolute;visibility:hidden;pointer-events:none;' +
+                'display:flex;flex-direction:column;white-space:nowrap;width:max-content;' +
+                'flex:none;opacity:1;padding:' + pad + ';';
+            probe.innerHTML = panel.innerHTML;
+            document.body.appendChild(probe);
+
+            const contentWidth = probe.scrollWidth + LEVELS_EXPAND_EXTRA;
+            document.body.removeChild(probe);
+
+            nodeData.levelsExpandWidth = contentWidth;
+            return nodeData.levelsExpandWidth;
+        }
+
+        function applyNodeExpansion(nodeData) {
+            if (!nodeData.unlockedElement) return;
+
+            updateExpandDirection(nodeData);
+            const expandW = measureLevelsExpandWidth(nodeData);
+            const nodeSize = getNodeSize();
+            const totalW = nodeSize + expandW;
+
+            nodeData.unlockedElement.style.setProperty('--levels-expand', expandW + 'px');
+            nodeData.wrapper.style.width = totalW + 'px';
+            nodeData.unlockedElement.style.width = totalW + 'px';
+
+            if (nodeData.expandDirection === 'left') {
+                nodeData.wrapper.style.left = (nodeData.x + nodeSize - totalW) + 'px';
+            } else {
+                nodeData.wrapper.style.left = nodeData.x + 'px';
+            }
+
+            if (nodeData.levelsPanel) {
+                nodeData.levelsPanel.style.flex = '0 0 ' + expandW + 'px';
+                nodeData.levelsPanel.style.width = expandW + 'px';
+                nodeData.levelsPanel.style.opacity = '1';
+                nodeData.levelsPanel.style.visibility = 'visible';
+                nodeData.levelsPanel.style.padding = nodeData.expandDirection === 'left'
+                    ? '12px 10px 12px 32px'
+                    : '12px 32px 12px 10px';
+            }
+        }
+
+        function resetExpandedLayout(nodeData) {
+            nodeData.wrapper.classList.remove('is-hovering', 'is-expanded');
+            nodeData.wrapper.style.width = '';
+            nodeData.wrapper.style.left = nodeData.x + 'px';
+            if (nodeData.unlockedElement) {
+                nodeData.unlockedElement.style.removeProperty('--levels-expand');
+                nodeData.unlockedElement.style.width = '';
+            }
+            if (nodeData.levelsPanel) {
+                nodeData.levelsPanel.style.flex = '';
+                nodeData.levelsPanel.style.width = '';
+                nodeData.levelsPanel.style.opacity = '';
+                nodeData.levelsPanel.style.visibility = '';
+                nodeData.levelsPanel.style.padding = '';
+            }
+        }
+
+        /* -------------------------------------------------------------------
+         *  createNode(code, title, x, y, prerequisites)
+         * ------------------------------------------------------------------- */
+        function createNode(code, title, x, y, prerequisites = []) {
+            if (nodeRegistry.has(code)) {
+                console.warn('Le nœud « ' + code + ' » existe déjà.');
+                return nodeRegistry.get(code);
+            }
+
+            const startsUnlocked = prerequisites.length === 0;
+
+            const wrapper = document.createElement('div');
+            wrapper.className = 'node-wrapper';
+            wrapper.style.top = y + 'px';
+            wrapper.dataset.code = code;
+
+            const nodeData = {
+                code: code,
+                title: title,
+                xPercent: normalizeNodeXPercent(x),
+                x: 0,
+                y: y,
+                prerequisites: prerequisites.slice(),
+                wrapper: wrapper,
+                state: startsUnlocked ? NODE_STATE.UNLOCKED : NODE_STATE.LOCKED,
+                currentLevel: startsUnlocked ? 1 : null,
+                levels: [{ number: 1, title: 'Niveau 1' }],
+                unlockCode: '1',
+                unlockUrl: '',
+                iframeByLevel: {},
+                expandDirection: 'right',
+                imageUrl: null,
+                justExpanded: false
+            };
+
+            updateNodeHorizontalPosition(nodeData);
+            renderNodeElement(nodeData);
+            setupNodeInteractions(nodeData);
+
+            nodeRegistry.set(code, nodeData);
+            nodesLayer.appendChild(wrapper);
+
+            updateAllLockedStates();
+            refreshGraphSize();
+            drawConnections();
+            updateUserProgress();
+
+            return nodeData;
+        }
+
+
+        function setNodeLevels(code, levels) {
+            const node = nodeRegistry.get(code);
+            if (!node) {
+                console.warn('setNodeLevels : nœud « ' + code + ' » introuvable.');
+                return;
+            }
+            if (!Array.isArray(levels) || levels.length === 0 || levels.length > 5) {
+                console.warn('setNodeLevels : fournissez entre 1 et 5 niveaux pour « ' + code + ' ».');
+                return;
+            }
+
+            node.levels = levels.map(function (level, index) {
+                return {
+                    number: level.number != null ? level.number : index + 1,
+                    title: level.title || ('Niveau ' + (index + 1))
+                };
+            });
+
+            if (node.state === NODE_STATE.UNLOCKED) {
+                if (!node.currentLevel || node.currentLevel > node.levels.length) {
+                    node.currentLevel = 1;
+                }
+                renderNodeElement(node);
+                updateUserProgress();
+            }
+        }
+
+        function setUnlockCode(code, secretCode) {
+            const node = nodeRegistry.get(code);
+            if (!node) {
+                console.warn('setUnlockCode : nœud « ' + code + ' » introuvable.');
+                return;
+            }
+            node.unlockCode = String(secretCode);
+        }
+
+        function setUnlockUrl(code, url) {
+            const node = nodeRegistry.get(code);
+            if (!node) {
+                console.warn('setUnlockUrl : nœud « ' + code + ' » introuvable.');
+                return;
+            }
+            node.unlockUrl = url;
+        }
+        /* Modifier l'image affichée sur un nœud ici (optionnel) */
+        function setNodeImage(code, imageUrl) {
+            const node = nodeRegistry.get(code);
+            if (!node) {
+                console.warn('setNodeImage : nœud « ' + code + ' » introuvable.');
+                return;
+            }
+            node.imageUrl = imageUrl;
+            applyNodeImage(node);
+        }
+
+        function applyNodeImage(nodeData) {
+            if (!nodeData.imageUrl) return;
+
+            if (nodeData.diskElement) {
+                nodeData.diskElement.style.backgroundImage = 'url("' + nodeData.imageUrl + '")';
+            }
+            if (nodeData.element) {
+                nodeData.element.style.backgroundImage = 'url("' + nodeData.imageUrl + '")';
+                nodeData.element.classList.add('has-image');
+            }
+        }
+
+        function setNodeIframe(code, level, srcOrHtml) {
+            const node = nodeRegistry.get(code);
+            if (!node) {
+                console.warn('setNodeIframe : nœud « ' + code + ' » introuvable.');
+                return;
+            }
+
+            const value = String(srcOrHtml).trim();
+            node.iframeByLevel[level] = value.startsWith('<iframe')
+                ? value
+                : '<iframe src="' + value + '" width="100%" height="50%" frameborder="0" allowfullscreen></iframe>';
+        }
+
+
+        /* -------------------------------------------------------------------
+         *  Rendu visuel des nœuds
+         * ------------------------------------------------------------------- */
+        function renderNodeElement(nodeData) {
+            nodeData.wrapper.innerHTML = '';
+
+            if (nodeData.state === NODE_STATE.LOCKED) {
+                const lockedDisk = document.createElement('div');
+                lockedDisk.className = 'node--locked';
+                applyNodeTitleSizing(lockedDisk, nodeData.title);
+                nodeData.element = lockedDisk;
+                nodeData.wrapper.appendChild(lockedDisk);
+                applyNodeImage(nodeData);
+                updateAllLockedStates();
+                return;
+            }
+
+            const badgeBubble = document.createElement('div');
+            badgeBubble.className = 'node-badge-bubble';
+            nodeData.badgeElement = badgeBubble;
+
+            const unlocked = document.createElement('div');
+            unlocked.className = 'node-unlocked';
+            nodeData.unlockedElement = unlocked;
+
+            const disk = document.createElement('div');
+            disk.className = 'node-disk';
+            applyNodeTitleSizing(disk, nodeData.title);
+            nodeData.diskElement = disk;
+
+            const levelsPanel = document.createElement('div');
+            levelsPanel.className = 'node-levels';
+            nodeData.levelsPanel = levelsPanel;
+
+            buildLevelChips(nodeData);
+
+            unlocked.appendChild(disk);
+            unlocked.appendChild(levelsPanel);
+
+            nodeData.wrapper.appendChild(badgeBubble);
+            nodeData.wrapper.appendChild(unlocked);
+
+            applyNodeImage(nodeData);
+            updateExpandDirection(nodeData);
+            measureLevelsExpandWidth(nodeData);
+            updateNodeVisuals(nodeData);
+        }
+
+        function buildLevelChips(nodeData) {
+            nodeData.levelsPanel.innerHTML = '';
+
+            nodeData.levels.forEach(function (level) {
+                const chip = document.createElement('button');
+                chip.type = 'button';
+                chip.className = 'level-chip';
+                if (level.number === nodeData.currentLevel) {
+                    chip.classList.add('is-active');
+                }
+
+                chip.innerHTML =
+                    '<span class="level-chip__number">' + level.number + '</span>' +
+                    '<span class="level-chip__title">' + level.title + '</span>';
+
+                chip.addEventListener('click', function (event) {
+                    event.stopPropagation();
+                    selectLevel(nodeData, level.number);
+                    openContentModal(nodeData, level.number);
+                    collapseNodeWrapper(nodeData);
+                });
+
+                nodeData.levelsPanel.appendChild(chip);
+            });
+        }
+
+        function setupNodeInteractions(nodeData) {
+            function handleNodeActivation(event) {
+                if (nodeData.state === NODE_STATE.LOCKED) {
+                    openUnlockModal(nodeData);
+                    return;
+                }
+                if (event.target.closest('.level-chip')) return;
+
+                if (isMobileLayout()) {
+                    if (!nodeData.wrapper.classList.contains('is-expanded')) {
+                        event.preventDefault();
+                        event.stopPropagation();
+                        collapseAllExpandedNodes();
+                        nodeData.wrapper.classList.add('is-expanded');
+                        nodeData.justExpanded = true;
+                        setTimeout(function () {
+                            nodeData.justExpanded = false;
+                        }, 250);
+                        applyNodeExpansion(nodeData);
+                        return;
+                    }
+                    if (nodeData.justExpanded) {
+                        event.preventDefault();
+                        event.stopPropagation();
+                        return;
+                    }
+                    if (event.target.closest('.node-disk')) {
+                        openContentModal(nodeData, nodeData.currentLevel);
+                    }
+                    return;
+                }
+
+                if (event.target.closest('.node-disk')) {
+                    openContentModal(nodeData, nodeData.currentLevel);
+                }
+            }
+
+            nodeData.wrapper.addEventListener('click', handleNodeActivation);
+
+            if (isDesktopHover()) {
+                nodeData.wrapper.addEventListener('mouseenter', function () {
+                    if (nodeData.state !== NODE_STATE.UNLOCKED) return;
+                    nodeData.wrapper.classList.add('is-hovering');
+                    applyNodeExpansion(nodeData);
+                });
+
+                nodeData.wrapper.addEventListener('mouseleave', function () {
+                    resetExpandedLayout(nodeData);
+                });
+            }
+        }
+
+        function collapseNodeWrapper(nodeData) {
+            nodeData.wrapper.classList.remove('is-expanded');
+            resetExpandedLayout(nodeData);
+            if (isMobileLayout()) {
+                applyMobileGraphFit();
+            }
+        }
+
+        /*
+         * Choisit le côté où afficher les niveaux (et donc où s'allonge la capsule).
+         * Les niveaux apparaissent du côté où il y a le plus d'espace libre.
+         */
+        function updateExpandDirection(nodeData) {
+            if (!nodeData.unlockedElement) return;
+
+            const containerWidth = getGraphUsableWidth();
+            const nodeSize = getNodeSize();
+            const nodeCenterX = nodeData.x + nodeSize / 2;
+            const spaceLeft = nodeCenterX;
+            const spaceRight = containerWidth - nodeCenterX;
+
+            nodeData.expandDirection = spaceRight >= spaceLeft ? 'right' : 'left';
+            nodeData.unlockedElement.classList.toggle('expand-left', nodeData.expandDirection === 'left');
+            nodeData.unlockedElement.classList.toggle('expand-right', nodeData.expandDirection === 'right');
+        }
+
+        function selectLevel(nodeData, levelNumber) {
+            nodeData.currentLevel = levelNumber;
+            updateNodeVisuals(nodeData);
+            updateUserProgress();
+            saveGameState();
+
+            nodeData.levelsPanel.querySelectorAll('.level-chip').forEach(function (chip, index) {
+                chip.classList.toggle('is-active', nodeData.levels[index].number === levelNumber);
+            });
+        }
+
+        function updateNodeVisuals(nodeData) {
+            if (nodeData.state !== NODE_STATE.UNLOCKED || !nodeData.badgeElement) return;
+
+            const maxLevel = nodeData.levels.length;
+            const current = nodeData.currentLevel;
+            const ratio = maxLevel <= 1 ? 1 : (current - 1) / (maxLevel - 1);
+
+            nodeData.badgeElement.textContent = current + ' / ' + maxLevel;
+            nodeData.badgeElement.style.color = getGoldColor(ratio);
+            nodeData.unlockedElement.classList.toggle('node--golden', current >= maxLevel);
+        }
+
+        function getGoldColor(ratio) {
+            const green = { r: 67, g: 160, b: 71 };
+            const gold = { r: 255, g: 179, b: 0 };
+            const t = Math.max(0, Math.min(1, ratio));
+            return 'rgb(' +
+                Math.round(green.r + (gold.r - green.r) * t) + ', ' +
+                Math.round(green.g + (gold.g - green.g) * t) + ', ' +
+                Math.round(green.b + (gold.b - green.b) * t) + ')';
+        }
+
+        /* Orange si verrouillé mais tous les prérequis déverrouillés */
+        function areAllPrerequisitesUnlocked(nodeData) {
+            if (nodeData.prerequisites.length === 0) return true;
+            return nodeData.prerequisites.every(function (parentCode) {
+                const parent = nodeRegistry.get(parentCode);
+                return parent && parent.state === NODE_STATE.UNLOCKED;
+            });
+        }
+
+        function updateAllLockedStates() {
+            nodeRegistry.forEach(function (node) {
+                if (node.state !== NODE_STATE.LOCKED || !node.element) return;
+                node.element.classList.toggle('node--ready', areAllPrerequisitesUnlocked(node));
+            });
+        }
+
+
+        /* -------------------------------------------------------------------
+         *  Progression joueur (expérience + niveau)
+         *  Nœuds sans prérequis : le niveau 1 ne compte pas, les suivants oui.
+         *  Nœuds avec prérequis : tous les niveaux comptent.
+         *  L'expérience ne peut que monter, jamais diminuer.
+         * ------------------------------------------------------------------- */
+        function getNodeLevelContribution(node) {
+            if (node.state !== NODE_STATE.UNLOCKED || !node.currentLevel) return 0;
+            if (node.prerequisites.length === 0) {
+                return Math.max(0, node.currentLevel - 1);
+            }
+            return node.currentLevel;
+        }
+
+        function getSumOfCurrentNodeLevels() {
+            let sum = 0;
+            nodeRegistry.forEach(function (node) {
+                sum += getNodeLevelContribution(node);
+            });
+            return sum;
+        }
+
+        function updateUserProgress() {
+            const rawTotalXP = getSumOfCurrentNodeLevels() * XP_PER_NODE_LEVEL;
+            if (rawTotalXP > highestTotalXP) {
+                highestTotalXP = rawTotalXP;
+            }
+            const totalXP = highestTotalXP;
+            const userLevel = Math.floor(totalXP / XP_PER_USER_LEVEL) + 1;
+            const xpInBar = totalXP % XP_PER_USER_LEVEL;
+            const fillPercent = (xpInBar / XP_PER_USER_LEVEL) * 100;
+
+            userLevelEl.textContent = userLevel;
+            xpFillEl.style.width = fillPercent + '%';
+            xpTextEl.textContent = xpInBar + ' / ' + XP_PER_USER_LEVEL;
+        }
+
+        function updateStreakDisplay() {
+            streakCountEl.textContent = streakCount;
+        }
+
+
+        /* -------------------------------------------------------------------
+         *  Persistance locale (localStorage)
+         * ------------------------------------------------------------------- */
+        function saveGameState() {
+            const nodes = {};
+            nodeRegistry.forEach(function (node, code) {
+                nodes[code] = {
+                    state: node.state,
+                    currentLevel: node.currentLevel
+                };
+            });
+            localStorage.setItem(SAVE_KEY, JSON.stringify({
+                highestTotalXP: highestTotalXP,
+                streakCount: streakCount,
+                nodes: nodes
+            }));
+        }
+
+        function loadGameState() {
+            const raw = localStorage.getItem(SAVE_KEY);
+            if (!raw) return;
+
+            try {
+                const data = JSON.parse(raw);
+
+                if (typeof data.highestTotalXP === 'number') {
+                    highestTotalXP = data.highestTotalXP;
+                }
+                if (typeof data.streakCount === 'number') {
+                    streakCount = data.streakCount;
+                }
+
+                if (data.nodes && typeof data.nodes === 'object') {
+                    Object.keys(data.nodes).forEach(function (code) {
+                        const node = nodeRegistry.get(code);
+                        if (!node) return;
+
+                        const saved = data.nodes[code];
+                        if (saved.state) {
+                            node.state = saved.state;
+                        }
+                        if (saved.currentLevel != null) {
+                            node.currentLevel = saved.currentLevel;
+                        } else if (node.state === NODE_STATE.UNLOCKED) {
+                            node.currentLevel = 1;
+                        }
+                        renderNodeElement(node);
+                    });
+                }
+
+                updateUserProgress();
+                updateStreakDisplay();
+                updateAllLockedStates();
+                drawConnections();
+            } catch (error) {
+                console.warn('Impossible de charger la sauvegarde locale.', error);
+            }
+        }
+
+
+        /* -------------------------------------------------------------------
+         *  Déverrouillage (validation manuelle + cascade prérequis)
+         * ------------------------------------------------------------------- */
+        function unlockNode(nodeData) {
+            if (nodeData.state === NODE_STATE.UNLOCKED) return;
+            nodeData.state = NODE_STATE.UNLOCKED;
+            nodeData.currentLevel = 1;
+            renderNodeElement(nodeData);
+        }
+
+        function unlockNodeAndPrerequisites(nodeData) {
+            nodeData.prerequisites.forEach(function (parentCode) {
+                const parent = nodeRegistry.get(parentCode);
+                if (parent) unlockNodeAndPrerequisites(parent);
+            });
+            unlockNode(nodeData);
+        }
+
+        function openUnlockModal(nodeData) {
+            activeUnlockNode = nodeData;
+            unlockCodeInput.value = '';
+            unlockError.textContent = '';
+            showModal(unlockModal);
+            unlockCodeInput.focus();
+        }
+
+        /* Validation uniquement au clic sur « Valider » (ou Entrée) */
+        function validateUnlockCode() {
+            if (!activeUnlockNode) return;
+
+            if (unlockCodeInput.value === activeUnlockNode.unlockCode) {
+                streakCount += 1;
+                updateStreakDisplay();
+                unlockNodeAndPrerequisites(activeUnlockNode);
+                updateAllLockedStates();
+                updateUserProgress();
+                closeAllModals();
+                refreshGraphSize();
+                drawConnections();
+                saveGameState();
+            } else {
+                streakCount = 0;
+                updateStreakDisplay();
+                unlockError.textContent = 'Code incorrect. Compteur remis à zéro.';
+                saveGameState();
+            }
+        }
+
+        btnDebloquer.addEventListener('click', function () {
+            if (!activeUnlockNode || !activeUnlockNode.unlockUrl) {
+                unlockError.textContent = 'Aucun site de déverrouillage configuré pour ce nœud.';
+                return;
+            }
+            unlockError.textContent = '';
+            openUnlockTestIframe(activeUnlockNode);
+        });
+
+        btnValidateCode.addEventListener('click', validateUnlockCode);
+
+        unlockCodeInput.addEventListener('keydown', function (event) {
+            if (event.key === 'Enter') validateUnlockCode();
+        });
+
+
+        /* --- Modale iframe --- */
+        function buildIframeHtml(url) {
+            return '<iframe src="' + url + '" width="100%" height="100%" frameborder="0" allowfullscreen></iframe>';
+        }
+
+        function openUnlockTestIframe(nodeData) {
+            contentModalHeader.textContent = nodeData.title + ' · Déblocage';
+            contentModalBody.innerHTML = buildIframeHtml(nodeData.unlockUrl);
+            showModal(contentModal);
+        }
+
+        function openContentModal(nodeData, levelNumber) {
+            const levelInfo = nodeData.levels.find(function (l) { return l.number === levelNumber; });
+            const levelLabel = levelInfo
+                ? ('Niveau ' + levelInfo.number + ' — ' + levelInfo.title)
+                : ('Niveau ' + levelNumber);
+
+            contentModalHeader.textContent = nodeData.title + ' · ' + levelLabel;
+
+            const iframeHtml = nodeData.iframeByLevel[levelNumber];
+            contentModalBody.innerHTML = iframeHtml
+                ? iframeHtml
+                : '<p style="padding:48px 24px;text-align:center;color:#666;">' +
+                  'Aucun contenu disponible pour ce niveau.<br>' +
+                  'Ça arrivera !</p>';
+
+            showModal(contentModal);
+        }
+
+        function showModal(modalElement) {
+            overlay.classList.remove('hidden');
+            modalElement.classList.remove('hidden');
+        }
+
+        function closeAllModals() {
+            overlay.classList.add('hidden');
+            unlockModal.classList.add('hidden');
+            contentModal.classList.add('hidden');
+            contentModalBody.innerHTML = '';
+            contentModalHeader.textContent = '';
+            activeUnlockNode = null;
+        }
+
+        function closeContentModal() {
+            contentModal.classList.add('hidden');
+            contentModalBody.innerHTML = '';
+            contentModalHeader.textContent = '';
+            if (activeUnlockNode && !unlockModal.classList.contains('hidden')) {
+                overlay.classList.remove('hidden');
+            } else if (!activeUnlockNode || unlockModal.classList.contains('hidden')) {
+                overlay.classList.add('hidden');
+            }
+        }
+
+        document.addEventListener('click', function (event) {
+            if (!isMobileLayout()) return;
+            if (event.target.closest('.node-wrapper')) return;
+            if (event.target.closest('.modal')) return;
+            if (event.target.closest('#user-hud')) return;
+            if (event.target.closest('#streak-counter')) return;
+            collapseAllExpandedNodes();
+        });
+
+        overlay.addEventListener('click', closeAllModals);
+        document.querySelectorAll('.modal__close').forEach(function (button) {
+            button.addEventListener('click', function (event) {
+                event.stopPropagation();
+                if (button.closest('#content-modal') && activeUnlockNode &&
+                    !unlockModal.classList.contains('hidden')) {
+                    closeContentModal();
+                } else {
+                    closeAllModals();
+                }
+            });
+        });
+        contentModalFooterClose.addEventListener('click', closeAllModals);
+        document.querySelectorAll('.modal').forEach(function (modal) {
+            modal.addEventListener('click', function (event) { event.stopPropagation(); });
+        });
+
+
+        /* --- Connexions et taille adaptative du fond blanc --- */
+        function refreshGraphSize() {
+            let maxBottom = 400;
+            const nodeSize = getNodeSize();
+
+            nodeRegistry.forEach(function (node) {
+                const badgeOffset = node.state === NODE_STATE.UNLOCKED ? BADGE_TOTAL_HEIGHT : 0;
+                const bottom = node.y + badgeOffset + nodeSize + GRAPH_BOTTOM_PADDING;
+                if (bottom > maxBottom) maxBottom = bottom;
+            });
+
+            nodesLayer.style.minHeight = maxBottom + 'px';
+            dividersLayer.style.height = maxBottom + 'px';
+            connectionsSvg.setAttribute('height', maxBottom);
+            graphContainer.style.minHeight = maxBottom + 'px';
+            setGraphNodeSizeVariable();
+            applyMobileGraphFit();
+        }
+
+        function drawConnections() {
+            connectionsSvg.querySelectorAll('line').forEach(function (line) { line.remove(); });
+
+            nodeRegistry.forEach(function (node) {
+                node.prerequisites.forEach(function (parentCode) {
+                    const parent = nodeRegistry.get(parentCode);
+                    if (!parent) return;
+
+                    const from = getNodeConnectionPoint(parent);
+                    const to = getNodeConnectionPoint(node);
+
+                    const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+                    line.setAttribute('x1', from.x);
+                    line.setAttribute('y1', from.y);
+                    line.setAttribute('x2', to.x);
+                    line.setAttribute('y2', to.y);
+                    connectionsSvg.appendChild(line);
+                });
+            });
+        }
+
+        function getNodeConnectionPoint(nodeData) {
+            const nodeSize = getNodeSize();
+            const badgeOffset = nodeData.state === NODE_STATE.UNLOCKED ? BADGE_TOTAL_HEIGHT : 0;
+            return {
+                x: nodeData.x + nodeSize / 2,
+                y: nodeData.y + badgeOffset + nodeSize / 2
+            };
+        }
+
+        window.addEventListener('resize', function () {
+            setGraphNodeSizeVariable();
+            applyMobileGraphFit();
+            nodeRegistry.forEach(function (node) {
+                measureLevelsExpandWidth(node);
+                if (node.wrapper.classList.contains('is-hovering') ||
+                    node.wrapper.classList.contains('is-expanded')) {
+                    applyNodeExpansion(node);
+                }
+            });
+            drawConnections();
+        });
+
+
+        /* ===================================================================
+         *  PARTIE À MODIFIER PAR LE DÉVELOPPEUR
+         *  Suivez les commentaires « Modifier ... ici ».
+         * =================================================================== */
+
+
+        /* -------------------------------------------------------------------
+         *  ÉTAPE 1 — Modifier les nœuds ici
+         *
+         *  createNode(code, titre, x, y, [prérequis]);
+         *  x est un pourcentage de la largeur de la zone brune (0 = bord gauche, 100 = bord droit) ; y reste en pixels.
+         *  Sans prérequis [] → déverrouillé dès la création ; le niveau 1 ne compte pas pour l'XP.
+         *  Avec prérequis     → verrouillé (rouge ou orange foncé si prêts).
+         *
+         *  Espacer les nœuds pour que l'extension au survol ne se chevauche pas.
+         * ------------------------------------------------------------------- */
+
+
+
+        createNode('12Pemdas', 'Priorités des opérations', 50, 60, []);
+        setNodeLevels('12Pemdas', [
+            { number: 1, title: '4 opérations de base' },
+            { number: 2, title: 'Avec des puissances' },
+            { number: 3, title: 'Avec des parenthèses' },
+            { number: 4, title: 'Plus d\'opérations'},
+            { number: 5, title: 'Attention aux pièges !'},
+        ]);
+        setUnlockUrl('12Pemdas', 'https://numbas.mathcentre.ac.uk/exam/48669/test-exam/embed/');
+        // 5C12-0 sans parenthèses, 4C11 sans parenthèses
+        setNodeIframe('12Pemdas', 1, 'https://coopmaths.fr/alea/?uuid=4c10a&id=5C12-0&n=5&d=10&s=1&s2=false&s3=true&s4=true&i=1&cd=1&tip=0&uuid=62f66&id=4C11&n=5&d=10&s=1&s2=false&i=1&cd=1&tip=0&v=eleve&es=21100000&title=4%2520op%25C3%25A9rations%2520de%2520base');
+        // 4C34 mélange
+        setNodeIframe('12Pemdas', 2, 'https://coopmaths.fr/alea/?uuid=2d79c&id=4C34&n=5&d=10&s=false&s2=3&s3=false&i=1&cd=1&tip=0&alea=27NM&v=eleve&es=21100000&title=Avec%2520des%2520puissances');
+        // 5C12-0 avec parenthèses, 5C12 option 2, 4C11 avec parenthèses
+        setNodeIframe('12Pemdas', 3, 'https://coopmaths.fr/alea/?uuid=e61fc&id=5C12&n=4&d=10&s=2&s2=false&s3=true&s4=false&i=1&cd=1&tip=0&uuid=4c10a&id=5C12-0&n=4&d=10&s=2&s2=false&s3=true&s4=true&i=1&cd=1&tip=0&uuid=62f66&id=4C11&n=4&d=10&s=2&s2=false&i=1&cd=1&tip=0&v=eleve&es=21100000&title=Avec%2520des%2520parenth%25C3%25A8ses');
+        // 5C12 option 3, 4 et 5
+        setNodeIframe('12Pemdas', 4, 'https://coopmaths.fr/alea/?uuid=e61fc&id=5C12&n=4&d=10&s=3&s2=false&s3=true&s4=false&i=1&cd=1&tip=0&uuid=e61fc&id=5C12&n=3&d=10&s=4&s2=false&s3=true&s4=false&i=1&cd=1&tip=0&uuid=e61fc&id=5C12&n=2&d=10&s=5&s2=false&s3=true&s4=false&i=1&cd=1&tip=0&v=eleve&es=21100000&title=Plus%2520d%27op%25C3%25A9rations');
+        // 4C33-0 écrire en puissances
+        setNodeIframe('12Pemdas', 5, 'https://coopmaths.fr/alea/?uuid=1d078&id=4C33-0&n=5&d=10&s=2&s2=3&s3=1&s4=3&s5=2&i=1&cd=1&tip=0&v=eleve&es=21100000&title=Attention%2520aux%2520pi%25C3%25A8ges%2520%21');
+        
+        
+        
+        createNode('12P', 'Puissances naturelles', 90, 460, ['12Pemdas']);
+        setNodeLevels('12P', [
+            { number: 1, title: 'Puissance d\'un nombre'},
+            { number: 2, title: 'Puissances de même base' },
+            { number: 3, title: 'Puissance d\'un produit ou quotient'},
+            { number: 4, title: 'Simplification de puissances'}
+        ]);
+        setUnlockUrl('12P', 'https://numbas.mathcentre.ac.uk/exam/48696/deblocage-puissances-naturelles/embed/');
+        setUnlockCode('12P', 'Bruce');
+        // 3C10-1 (exposants positifs), 4C32-0 (exposants positifs), 2N31-7 (moyen, exposants élevés)
+        setNodeIframe('12P', 1, 'https://coopmaths.fr/alea/?uuid=eb865&id=3C10-1&n=4&d=10&s=1&i=1&cd=1&tip=0&uuid=5d72b&id=4C32-0&n=4&d=10&s=1&i=1&cd=1&tip=0&uuid=f49ff&id=2N31-7&n=4&d=10&s=2&s2=true&i=1&cd=1&tip=0&v=eleve&es=21100000&title=Puissance%2520d%27un%2520nombre');
+        // 	4C33-1 option 1-2-3
+        setNodeIframe('12P', 2, 'https://coopmaths.fr/alea/?uuid=bae57&id=4C33-1&n=8&d=10&s=1-2-3&s2=1&i=1&cd=1&tip=0&v=eleve&es=21100000&title=Puissances%2520de%2520m%25C3%25AAme%2520base.%2520Tapez%2520%255E%2520pour%2520exposant');
+        // 	4C33-1 option 4 et 5, 1A-C03-15, 1A-C03-4
+        setNodeIframe('12P', 3, 'https://coopmaths.fr/alea/?uuid=bae57&id=4C33-1&n=6&d=10&s=4-5&s2=1&i=1&cd=1&tip=0&uuid=b37ab&id=1A-C03-4&n=2&d=10&s=false&s2=false&s4=false&i=1&cd=1&tip=0&uuid=c091a&id=1A-C03-15&n=2&d=10&s=false&s2=false&s4=false&i=1&cd=1&tip=0&v=eleve&es=21100000&title=Puissance%2520de%2520produit%2520ou%2520quotient.%2520Tapez%2520%255E%2520pour%2520exposant');
+        // 4C33-1 option 6, 3C1QCM-05, 2N31-5 (mélange et correction détaillée), 2N31-3, 4C30-5
+        setNodeIframe('12P', 4, 'https://coopmaths.fr/alea/?uuid=bae57&id=4C33-1&n=4&d=10&s=6&s2=1&i=1&cd=1&tip=0&uuid=44f7a&id=3C1QCM-05&n=1&d=10&s=false&s2=false&s4=false&i=1&cd=1&tip=0&uuid=6b2e5&id=2N31-5&n=4&d=10&s=3&s2=4&s3=false&i=1&cd=1&tip=0&uuid=c71da&id=2N31-3&n=6&d=10&i=1&cd=1&tip=0&uuid=c72da&id=4C30-5&n=4&d=10&s=1&cd=1&tip=0&v=eleve&es=21100000&title=Simplification%2520de%2520puissances.%2520Tapez%2520%255E%2520pour%2520exposant');
+        
+
+
+        createNode('12F', "Facteurs premiers", 57, 780, []);
+        setNodeLevels('12F', [
+            { number: 1, title: 'Critères de divisibilité' },
+            { number: 2, title: 'Décomposition en facteurs premiers'}
+        ]);
+        // 5A11-3 (divisibilité par 2,3,5,9,10), 2N20-2 , 5A11-1v2 (par 2, par 3 et par 5)
+        setNodeIframe('12F', 1, 'https://coopmaths.fr/alea/?uuid=4a128&id=5A11-3&n=5&d=10&s=3&i=1&cd=1&tip=0&uuid=d5a6d&id=2N20-2&n=4&d=10&s=true&i=1&cd=1&tip=0&uuid=424b2&id=5A11-1v2&n=1&d=10&s=1&i=1&cd=1&tip=0&uuid=424b2&id=5A11-1v2&n=1&d=10&s=2&i=1&cd=1&tip=0&uuid=424b2&id=5A11-1v2&n=1&d=10&s=3&i=1&cd=1&tip=0&v=eleve&es=21100000&title=Crit%25C3%25A8res%2520de%2520divisibilit%25C3%25A9');
+        // can5C10, 5A13, 4A11-0
+        setNodeIframe('12F', 2, 'https://coopmaths.fr/alea/?uuid=1b91d&id=can5C10&n=4&d=10&s=1&s2=true&s3=false&s4=false&i=1&cd=1&tip=0&uuid=7f50c&id=5A13&n=4&d=10&s=2&s2=true&s3=false&s4=false&i=1&cd=1&tip=0&uuid=1eaf7&id=4A11-0&n=4&d=10&s=3&s2=true&s3=false&s4=true&i=1&cd=1&tip=0&v=eleve&es=21100000&title=D%25C3%25A9composition%2520en%2520facteurs%2520premiers');
+        
+
+
+
+
+        createNode('12FX', 'Multiplication Simplification Division de fractions', 180, 1150, ['12Pemdas','12F']);
+        setNodeLevels('12FX', [
+            { number: 1, title: 'Multiplication de fractions quelconques' },
+            { number: 2, title: 'Multiplication par un entier' },
+            { number: 3, title: 'Simplification de fraction' },
+            { number: 4, title: 'Division de fractions' }
+        ]);
+        setUnlockCode('12FX', 'Triforce');
+        setUnlockUrl('12FX', 'https://numbas.mathcentre.ac.uk/exam/48697/exam-deblocage-multiplication-de-fractions/embed/');
+        // can4C16, can3C22, can2C20, 4C22-3 (solution unique)
+        setNodeIframe('12FX', 1, 'https://coopmaths.fr/alea/?uuid=07df0&id=can4C16&n=5&d=10&qcm=0&i=1&cd=1&tip=0&uuid=1894f&id=can3C22&n=3&d=10&qcm=0&i=1&cd=1&tip=0&uuid=4c878&id=can2C20&i=1&uuid=ee808&id=4C22-3&n=1&d=10&s=10&s2=2&s3=2&s4=true&i=1&cd=1&tip=0&v=eleve&es=21100000&title=Multiplication%2520de%2520fractions%2520quelconques');
+        // BP2AutoH26 (option 3), can6C17, can6C28
+        setNodeIframe('12FX', 2, 'https://coopmaths.fr/alea/?uuid=3a087&id=BP2AutoH26&n=6&d=10&s=3&i=1&cd=1&tip=0&uuid=daaa3&id=can6C17&i=1&uuid=2ce71&id=can6C28&i=1&v=eleve&es=21100000&title=Multiplication%2520par%2520un%2520entier');
+        // can6C54, can3C03, can6C63, 5N13 (option max), 4C24 (option 3)
+        setNodeIframe('12FX', 3, 'https://coopmaths.fr/alea/?uuid=39c09&id=can6C54&n=5&d=10&qcm=0&i=1&cd=1&tip=0&uuid=f1208&id=can3C03&n=2&d=10&qcm=0&i=1&cd=1&tip=0&uuid=81051&id=can6C63&n=2&d=10&qcm=0&i=1&cd=1&tip=0&uuid=f8f4e&id=5N13&n=6&d=10&s=11&s2=true&i=1&cd=1&tip=0&uuid=612b9&id=4C24&n=3&d=10&s=3&s2=2-3-5-7&s3=2&i=1&cd=1&tip=0&v=eleve&es=21100000&title=Simplification%2520de%2520fraction');
+        // can4C03, can5C31, 4C23 (option 6)
+        setNodeIframe('12FX', 4, 'https://coopmaths.fr/alea/?uuid=374b6&id=4C23&n=6&d=10&s=6&s2=true&i=1&cd=0&tip=0&uuid=c70e1&id=can5C31&i=1&v=eleve&es=21100000&title=Division%2520de%2520fractions');
+        
+        
+        
+        
+
+        createNode('12FA', "Addition de fractions", 315, 1650, ['12FX']);
+        setNodeLevels('12FA', [
+            { number: 1, title: 'Mêmes dénominateurs' },
+            { number: 2, title: 'Dénominateurs compatibles'},
+            { number: 3, title: 'Avec un entier'},
+            { number: 4, title: 'Dénominateurs quelconques'},
+            { number: 5, title: 'Synthèse : opérations sur les fractions'}
+        ]);
+        // can6C56
+        setNodeIframe('12FA', 1, 'https://coopmaths.fr/alea/?uuid=6dbf3&id=can6C56&n=5&d=10&qcm=0&i=1&cd=1&tip=0&v=eleve&es=21100000&title=Addition%2520de%2520fractions%2520au%2520m%25C3%25AAme%2520d%25C3%25A9nominateur');
+        // can6C57, can4C05, can4C07
+        setNodeIframe('12FA', 2, 'https://coopmaths.fr/alea/?uuid=058e4&id=can6C57&n=3&d=10&qcm=0&i=1&cd=1&tip=0&uuid=1b4fe&id=can4C05&n=3&d=10&qcm=0&i=1&cd=1&tip=0&uuid=da898&id=can4C07&n=3&d=10&qcm=0&i=1&cd=1&tip=0&v=eleve&es=21100000&title=Addition%2520de%2520fractions%2520avec%2520des%2520d%25C3%25A9nominateurs%2520dont%2520l%27un%2520est%2520multiple%2520de%2520l%27autre');
+        // can6N20 (numérateurs 1-2-3-4-5-6-7-8-9, dénominateurs par défaut), can6C60, can6C46
+        setNodeIframe('12FA', 3, 'https://coopmaths.fr/alea/?uuid=6317f&id=can6N20&n=3&d=10&s=2-3-4-5-6-7-8-9-10-11&s2=1-2-3-4-5-6-7-8-9&i=1&cd=1&tip=0&uuid=dd7d1&id=can6C60&n=5&d=10&qcm=0&i=1&cd=1&tip=0&uuid=1cee6&id=can6C46&i=1&v=eleve&es=21100000&title=Addition%2520de%2520fractions%2520avec%2520des%2520d%25C3%25A9nominateurs%2520dont%2520l%27un%2520est%2520multiple%2520de%2520l%27autre');
+        // can3C20, can6C58, can5C35, can5C36
+        setNodeIframe('12FA', 4, 'https://coopmaths.fr/alea/?uuid=3b4d5&id=can3C20&n=2&d=10&qcm=0&i=1&cd=1&tip=0&uuid=08a2a&id=can6C58&n=6&d=10&qcm=0&i=1&cd=1&tip=0&uuid=109ad&id=can5C35&i=1&uuid=7a19b&id=can5C36&i=1&v=eleve&es=21100000&title=Addition%2520de%2520fractions%2520avec%2520des%2520d%25C3%25A9nominateurs%2520quelconques');
+        // BP2AutoH26, 5C12-5, 4C23-11, 4C23-2, can3C19
+        setNodeIframe('12FA', 5, 'https://coopmaths.fr/alea/?uuid=3a087&id=BP2AutoH26&n=4&d=10&s=4&i=1&cd=1&tip=0&uuid=1cd63&id=5C12-5&n=5&d=10&i=1&cd=1&tip=0&uuid=f7f49&id=4C23-11&n=5&d=10&s=7&i=1&cd=1&tip=0&uuid=18dde&id=4C23-2&n=5&d=10&s=0&s2=false&s3=true&i=1&cd=1&tip=0&uuid=88281&id=can3C19&n=4&d=10&qcm=0&i=1&cd=1&tip=0&v=eleve&es=21100000&title=Synth%25C3%25A8se%2520%253A%2520op%25C3%25A9rations%2520sur%2520les%2520fractions');
+
+
+
+
+        createNode('12CL', "Calcul littéral", 87, 2000, ['12P','12FA']);
+        setNodeLevels('12CL', [
+            { number: 1, title: 'Une lettre à la place d\'un nombre'},
+            { number: 2, title: 'Additions ou multiplications'},
+            { number: 3, title: 'Additions et multiplications'}
+        ]);
+        // 5L14-6 (mélange, avec relatifs), 5L14-6 (mélange, avec relatifs et fractions), 5L14-3 (2-3-4-5), 5L14-1, 4L10-3 (avec aide)
+        setNodeIframe('12CL', 1, 'https://coopmaths.fr/alea/?uuid=e2e64&id=5L16&n=3&d=10&s=3&s2=true&i=1&cd=1&tip=0&alea=xE2s&uuid=79a6e&id=5L14-6&n=5&d=10&s=false&s2=true&s3=7&s4=false&s5=false&cd=1&tip=0&uuid=79a6e&id=5L14-6&n=5&d=10&s=false&s2=true&s3=7&s4=true&s5=false&cd=1&tip=0&uuid=1abc6&id=5L14-3&n=3&d=10&s2=false&s3=true&s4=2-3-4-5&cd=1&tip=0&uuid=97f1a&id=5L14-4&n=5&d=10&s=false&s3=5&i=1&cd=1&tip=0&uuid=17e39&id=5L14-1&n=3&d=10&cd=1&tip=0&uuid=4c5da&id=4L10-3&n=1&d=10&s=10&s2=1&s3=2&s4=true&cd=1&tip=0&v=eleve&es=21100000&title=Une%2520lettre%2520%25C3%25A0%2520la%2520place%2520d%27un%2520nombre');
+        // 5L12-2 (1-2-3-4-5-7-9), 5L12, 5L12-2 (6-8)
+        setNodeIframe('12CL', 2, 'https://coopmaths.fr/alea/?uuid=85d2d&id=5L12&n=4&d=10&s=9&s2=false&i=1&cd=1&tip=0&uuid=a8ad0&id=5L12-2&n=6&d=10&s=9&s2=false&s3=1-2-3-4-5-7-9&i=1&cd=1&tip=0&uuid=a8ad0&id=5L12-2&n=6&d=10&s=9&s2=false&s3=6-8&i=1&cd=1&tip=0&v=eleve&es=21100000&title=Additions%2520ou%2520multiplications');
+        // can4L07, 5L12-2 (10), 4L10-1
+        setNodeIframe('12CL', 3, 'https://coopmaths.fr/alea/?uuid=97664&id=can4L07&n=3&d=10&qcm=0&i=1&cd=1&tip=0&uuid=cc129&id=4L10-1&n=6&d=10&s=true&i=1&cd=1&tip=0&uuid=a8ad0&id=5L12-2&n=6&d=10&s=9&s2=false&s3=10&i=1&cd=1&tip=0&v=eleve&es=21100000&title=Additions%2520et%2520multiplications');
+
+
+
+
+        createNode('12DME', "Distributivité et mise en évidence", 215, 2350, ['12CL']);
+        setNodeLevels('12DME', [
+            { number: 1, title: 'Distributivité simple' },
+            { number: 2, title: 'Double distributivité'},
+            { number: 3, title: '+ et - devant une parenthèse'},
+            { number: 4, title: 'Mise en évidence'},
+            { number: 5, title: 'Calculs complexes'}
+        ]);
+        // can4L05, 4L10b (option 6 hasard x3), 3AutoN13-1, 2N41-11
+        setNodeIframe('12DME', 1, 'https://coopmaths.fr/alea/?uuid=56a2d&id=can4L05&i=1&uuid=b87a5&id=4L10b&n=4&d=10&s=5&s2=3&s3=3&s4=3&i=1&cd=1&tip=0&uuid=db2e0&id=3AutoN13-1&n=4&d=10&s=3&s2=2&s3=6&s4=false&i=1&cd=1&tip=0&uuid=7f8e2&id=2N41-11&n=4&d=10&s=4&i=1&cd=1&tip=0&v=eleve&es=21100000&title=Distributivit%25C3%25A9%2520simple');
+        // 3L1QCM-07, can2L13, 3L11-1b
+        setNodeIframe('12DME', 2, 'https://coopmaths.fr/alea/?uuid=69fed&id=can2L13&i=1&uuid=9802c&id=3L1QCM-07&i=1&uuid=67396&id=3L11-1b&i=1&v=eleve&es=21100000&title=Double%2520distributivit%25C3%25A9');
+        // 3L10 (1-2-3-4-5-6),can3L09, 3L10-2 (option 11), 5L14-4 (option 5), can3L10
+        setNodeIframe('12DME', 3, 'https://coopmaths.fr/alea/?uuid=603a8&id=3L10&n=6&d=10&s=1-2-3-4-5-6&i=1&cd=1&tip=0&uuid=8e42a&id=can3L09&n=3&d=10&qcm=0&i=1&cd=1&tip=0&uuid=c88ba&id=3L10-2&n=6&d=10&s=11&i=1&cd=1&tip=0&uuid=d6cd2&id=can3L10&i=1&v=eleve&es=21100000&title=%252B%2520et%2520-%2520devant%2520une%2520parenth%25C3%25A8se');
+        // 4L11-0, 4L11
+        setNodeIframe('12DME', 4, 'https://coopmaths.fr/alea/?uuid=0ee90&id=4L11-0&n=6&d=10&s=4&s2=4&i=1&cd=1&tip=0&uuid=dd1c9&id=4L11&n=6&d=10&s=4&s3=false&i=1&cd=1&tip=0&v=eleve&es=21100000&title=Mise%2520en%2520%25C3%25A9vidence');
+        // 1A-C09-9, 2N40-6 (option 0)
+        setNodeIframe('12DME', 5, 'https://coopmaths.fr/alea/?uuid=6df3d&id=1A-C09-9&n=3&d=10&s=false&s2=false&s4=false&i=1&cd=1&tip=0&uuid=60cc5&id=2N40-6&n=6&d=10&s=0&i=1&cd=1&tip=0&v=eleve&es=21100000&title=Calculs%2520complexes');
+
+
+
+        createNode('12EQ1', "Équations du premier degré", 55, 2700, ['12DME','12CL']);
+        setNodeLevels('12EQ1', [
+            { number: 1, title: 'Le principe fondamental' },
+            { number: 2, title: 'Une seule fois l\'inconnue'},
+            { number: 3, title: 'Plusieurs fois la même inconnue'},
+            { number: 4, title: 'Équations du premier degré variées'},
+            { number: 5, title: 'Multiplier par la variable ou inverser'}
+        ]);
+        // Application appliquer la même opération aux deux membres
+        setNodeIframe('12EQ1', 1, 'https://coopmaths.fr/alea/?uuid=equations&v=eleve&es=21100000&title=Appliquer%2520la%2520m%25C3%25AAme%2520op%25C3%25A9ration%2520aux%2520deux%2520membres%2520de%2520l%27%25C3%25A9galit%25C3%25A9');
+        // can4L01 (type 1, avec relatifs, corr détaillée) can4L01 (type 2, avec relatifs, corr détaillée), can2L23, can2L08
+        setNodeIframe('12EQ1', 2, 'https://coopmaths.fr/alea/?uuid=0641c&id=can4L01&n=5&d=10&s=true&s2=1&cd=1&tip=0&uuid=0641c&id=can4L01&n=5&d=10&s=true&s2=2&cd=1&tip=0&alea=NrxW&uuid=c1123&id=can2L08&n=5&d=10&qcm=0&i=1&cd=1&tip=0&alea=MMC3&uuid=eed98&id=can2L23&i=1&alea=H8r2&v=eleve&es=21100000&title=Plusieurs%2520op%25C3%25A9rations');
+        // can4L01 (type 3, avec relatifs, corr détaillée), 3L13-1 (type 4), 2N51-5 (type 4), 1A-C10-12
+        setNodeIframe('12EQ1', 3, 'https://coopmaths.fr/alea/?uuid=0641c&id=can4L01&n=5&d=10&s=false&s2=3&cd=1&tip=0&uuid=b81d0&id=3L13-1&n=3&d=10&s=4&s2=false&i=1&cd=1&tip=0&uuid=3b3d9&id=2N51-5&i=1&uuid=459d1&id=1A-C10-12&n=2&d=10&s=false&s2=true&s4=false&i=1&cd=1&tip=0&v=eleve&es=21100000&title=Plusieurs%2520fois%2520la%2520m%25C3%25AAme%2520inconnue');
+        // can4L01 (mélange), 4L29 (type 8), 3L13 (type 8)
+        setNodeIframe('12EQ1', 4, 'https://coopmaths.fr/alea/?uuid=0641c&id=can4L01&n=5&d=10&s=true&s2=4&i=1&cd=1&tip=0&uuid=799c4&id=4L20&n=5&d=10&s=true&s2=8&s3=true&i=1&cd=1&tip=0&uuid=f239f&id=3L13&n=5&d=10&s=true&s2=8&s3=false&i=1&cd=1&tip=0&v=eleve&es=21100000&title=%25C3%2589quations%2520du%2520premier%2520degr%25C3%25A9%2520vari%25C3%25A9es');
+        // 2N51-3a (relatifs), 2N52-5
+        setNodeIframe('12EQ1', 5, 'https://coopmaths.fr/alea/?uuid=7959f&id=2N51-3a&n=5&d=10&s=2&i=1&cd=1&tip=0&uuid=31017&id=2N52-5&n=5&d=10&s=3&i=1&cd=1&tip=0&v=eleve&es=21100000&title=Multiplier%2520par%2520la%2520variable%2520ou%2520inverser');
+
+        
+        createNode('12PR', "Produits remarquables", 7, 3100, ['12EQ1']);
+        setNodeLevels('12PR', [
+            { number: 1, title: 'Carré d\'une somme ou différence' },
+            { number: 2, title: 'Binôme conjugué'},
+            { number: 3, title: 'Développer des expressions variées'}
+        ]);
+        setNodeIframe('12PR', 1, 'https://coopmaths.fr/alea/?uuid=67e1b&id=3L1QCM-03&n=1&d=10&s=false&s2=true&s4=false&i=1&cd=1&tip=0&uuid=04b0a&id=2N41-6&n=3&d=10&s=1&s2=1-2&i=1&cd=1&tip=0&uuid=04b0a&id=2N41-6&n=3&d=10&s=2&s2=1-2&i=1&cd=1&tip=0&uuid=04b0a&id=2N41-6&n=3&d=10&s=3&s2=1-2&i=1&cd=1&tip=0&v=eleve&es=21100000&title=Carr%25C3%25A9%2520d%27une%2520somme%2520ou%2520d%27une%2520diff%25C3%25A9rence');
+        setNodeIframe('12PR', 2, 'https://coopmaths.fr/alea/?uuid=04b0a&id=2N41-6&n=3&d=10&s=1&s2=3&i=1&cd=1&tip=0&uuid=04b0a&id=2N41-6&n=3&d=10&s=2&s2=3&i=1&cd=1&tip=0&uuid=04b0a&id=2N41-6&n=3&d=10&s=3&s2=3&i=1&cd=1&tip=0&v=eleve&es=21100000&title=Bin%25C3%25B4me%2520conjugu%25C3%25A9');
+        setNodeIframe('12PR', 3, 'https://coopmaths.fr/alea/?uuid=7bd4f&id=2N41-6c&n=4&d=10&s=2&s2=4&s3=4&s4=4&i=1&cd=1&tip=0&uuid=889ef&id=2N41-10a&n=4&d=10&s=3-4-5-6-7-8-9-10&s2=false&s3=3&s4=true&i=1&cd=1&tip=0&uuid=1f3da&id=2N41-10b&n=4&d=10&s=3-4-5-6-7-8-9-10&s2=false&s3=3&s4=true&i=1&cd=1&tip=0&uuid=8f546&id=2N41-6d&n=4&d=10&s=2&s2=3&s3=4&s4=4&i=1&cd=1&tip=0&v=eleve&es=21100000&title=D%25C3%25A9velopper%2520des%2520expressions%2520vari%25C3%25A9es');
+
+        createHorizontalLine(3370, 'Troisième année');
+
+        createNode('12Facto', "Factorisation", 95, 3450, ['12PR','12EQ1']);
+        setNodeLevels('12Facto', [
+            { number: 1, title: 'Une à la fois' },
+            { number: 2, title: 'Plus complexes ou enchaînées'}
+        ]);
+        // 3L12, 2N41-7, can2L12, 3L11-6
+        setNodeIframe('12Facto', 1, 'https://coopmaths.fr/alea/?uuid=81fd2&id=3L12&uuid=0bd00&id=2N41-7&uuid=a1cb3&id=can2L12&n=5&d=10&qcm=0&cd=1&tip=0&uuid=51360&id=3L11-6&v=eleve&es=21100000&title=Une%2520%25C3%25A0%2520la%2520fois');
+        // 2N41-7, 2N41-2, 3L12-2 (option 3), 3L12-2 (option 4), 3L12-2 (option 5) (?IA)
+        setNodeIframe('12Facto', 2, 'https://coopmaths.fr/alea/?uuid=0bd00&id=2N41-7&n=5&d=10&s=3&i=1&cd=1&tip=0&uuid=47f20&id=2N41-2&n=5&d=10&s=1-2-3-4-5-6-8-9-10&i=1&cd=1&tip=0&uuid=c4b73&id=3L12-2&n=5&d=10&s=3&s2=2&s3=2&s4=2&s5=true&i=1&cd=1&tip=0&v=eleve&es=21100000&title=Plus%2520complexes%2520ou%2520encha%25C3%25AEn%25C3%25A9es%2520%28dernier%2520exercice%2520non%2520interactif%29');
+
+
+        createNode('3SYS',"Systèmes linéaires", 65, 3800, ['12EQ1']);
+        setNodeLevels('3SYS',[
+            { number: 1, title: 'par substitution'},
+            { number: 2, title: 'par combinaisons linéaires'}
+        ]);
+        setNodeIframe('3SYS', 1, 'https://coopmaths.fr/alea/?uuid=ccb71&id=2G34-3&n=1&d=10&s=1&cd=1&tip=0&alea=2VsK&uuid=521b6&id=2G34-7&n=2&d=10&s=1&cd=1&tip=0&alea=asRH&uuid=521b6&id=2G34-7&n=2&d=10&s=2&cd=1&tip=0&alea=9GPR&v=eleve&es=21100000&title=Syst%25C3%25A8mes%2520lin%25C3%25A9aires%2520%253A%2520r%25C3%25A9solution%2520par%2520substitution');
+        setNodeIframe('3SYS', 2, 'https://coopmaths.fr/alea/?uuid=ccb71&id=2G34-3&n=1&d=10&s=2&i=1&cd=1&tip=0&uuid=5179b&id=2G34-5&n=2&d=10&s=1&s2=false&s3=false&i=1&cd=1&tip=0&uuid=5179b&id=2G34-5&n=2&d=10&s=2&s2=false&s3=false&i=1&cd=1&tip=0&uuid=5179b&id=2G34-5&n=1&d=10&s=3&s2=false&s3=false&i=1&cd=1&tip=0&uuid=5179b&id=2G34-5&n=1&d=10&s=3&s2=true&s3=false&i=1&cd=1&tip=0&v=eleve&es=21100000&title=Syst%25C3%25A8mes%2520lin%25C3%25A9aires%2520%253A%2520r%25C3%25A9solution%2520par%2520combinaisons%2520lin%25C3%25A9aires');
+
+        createNode('3PE',"Puissances entières", 5, 4150, ['12PR']);
+        setNodeLevels('3PE',[
+            { number: 1, title: 'Puissances négatives'},
+            { number: 2, title: 'Propriétés des puissances'}
+        ]);
+        // 3C10-1 (exp négatifs), can2C28
+        setNodeIframe('3PE', 1, 'https://coopmaths.fr/alea/?uuid=eb865&id=3C10-1&n=4&d=10&s=2&cd=1&tip=0&uuid=0aa94&id=can2C28&n=4&d=10&qcm=0&cd=1&tip=0&v=eleve&es=21100000&title=Exposants%2520n%25C3%25A9gatifs');
+        // 2N31-10 (n=4), 1A-C03-12, 1A-C03-6, can2C30 (n=2)
+        setNodeIframe('3PE', 2, 'https://coopmaths.fr/alea/?uuid=fc2e8&id=2N31-10&n=5&d=10&i=1&cd=1&tip=0&uuid=2137a&id=1A-C03-12&n=1&d=10&s=false&s2=true&s4=false&i=1&cd=1&tip=0&uuid=3f994&id=1A-C03-6&i=1&uuid=3625c&id=can2C30&n=2&d=10&qcm=0&i=1&cd=1&tip=0&v=eleve&es=21100000&title=Propri%25C3%25A9t%25C3%25A9s%2520des%2520puissances');
+
+        createNode('3Rac',"Racines carrées", 49, 4500, ['12PR','3PE']);
+        setNodeLevels('3Rac',[
+            { number: 1, title: 'Comprendre les racines carrées'},
+            { number: 2, title: 'Simplifier une racine carrée'},
+            { number: 3, title: 'Rendre un dénominateur rationnel'},
+            { number: 4, title: 'Des racines carrées dans des calculs'},
+            { number: 5, title: 'Simplifier des expressions avec racines'}
+        ]);
+        setNodeIframe('3Rac', 1, 'https://coopmaths.fr/alea/?uuid=f5cbd&id=4G20-2&n=1&d=10&s=2&s2=1&s3=false&cd=1&tip=0&uuid=f5cbd&id=4G20-2&n=3&d=10&s=1&s2=1&s3=false&cd=1&tip=0&uuid=ed2ed&id=2N12-3&i=1&uuid=55cc0&id=2N32-1&i=1&v=eleve&es=21100000&title=Comprendre%2520les%2520racines%2520carr%25C3%25A9es');
+        setNodeIframe('3Rac', 2, 'https://coopmaths.fr/alea/?uuid=d9495&id=2N32-3&n=6&d=10&s=2&i=1&cd=1&tip=0&v=eleve&es=21100000&title=Simplifier%2520une%2520racine%2520carr%25C3%25A9e');
+        setNodeIframe('3Rac', 3, 'https://coopmaths.fr/alea/?uuid=4771d&id=2N32-7&n=5&d=10&s=1&i=1&cd=1&tip=0&uuid=4771d&id=2N32-7&n=3&d=10&s=2&i=1&cd=1&tip=0&uuid=4771d&id=2N32-7&n=2&d=10&s=3&i=1&cd=1&tip=0&v=eleve&es=21100000&title=Rendre%2520un%2520d%25C3%25A9nominateur%2520rationnel');
+        setNodeIframe('3Rac', 4, 'https://coopmaths.fr/alea/?uuid=27f5c&id=can2C14&n=5&d=10&qcm=0&i=1&cd=1&tip=0&uuid=a2d6a&id=can3C09&n=3&d=10&qcm=0&i=1&cd=1&tip=0&uuid=660de&id=2N32-5&n=3&d=10&s=1&i=1&cd=1&tip=0&uuid=660de&id=2N32-5&n=3&d=10&s=2&i=1&cd=1&tip=0&v=eleve&es=21100000&title=Des%2520racines%2520carr%25C3%25A9es%2520dans%2520des%2520calculs');
+        setNodeIframe('3Rac', 5, 'https://coopmaths.fr/alea/?uuid=3a350&id=can2C08&n=3&d=10&qcm=0&i=1&cd=1&tip=0&uuid=99b29&id=2N32-2&n=3&d=10&s=1&i=1&cd=1&tip=0&uuid=12b72&id=2N32-4&n=3&d=10&s=2&i=1&cd=1&tip=0&v=eleve&es=21100000&title=Simplifier%2520des%2520expressions%2520avec%2520racines');
+
+        
+        createNode('3FA',"Fractions algébriques", 95, 4900, ['12Facto']);
+        setNodeLevels('3FA',[
+            { number: 1, title: 'Mise au même dénominateur'},
+            { number: 2, title: 'Pour résoudre des équations'}
+        ]);
+        setNodeIframe('3FA', 1, 'https://coopmaths.fr/alea/?uuid=90725&id=1A-C02-3&n=2&d=10&s=false&s2=true&s4=false&i=1&cd=1&tip=0&uuid=641bc&id=2N41-8&n=4&d=10&s=1&i=1&cd=1&tip=0&uuid=641bc&id=2N41-8&n=4&d=10&s=2&i=1&cd=1&tip=0&v=eleve&es=21100000&title=Mise%2520au%2520m%25C3%25AAme%2520d%25C3%25A9nominateur');
+        setNodeIframe('3FA', 2, 'https://coopmaths.fr/alea/?uuid=31017&id=2N52-5&n=3&d=10&s=1&i=1&cd=1&tip=0&uuid=31017&id=2N52-5&n=2&d=10&s=2&i=1&cd=1&tip=0&v=eleve&es=21100000&title=%25C3%2589quations%2520avec%2520fractions%2520alg%25C3%25A9briques');
+        
+        createNode('3INEQ',"Inéquations du premier degré", 25, 5250, ['12EQ1']);
+        setNodeLevels('3INEQ',[
+            { number: 1, title: 'Avec une opération'},
+            { number: 2, title: 'Avec plusieurs opérations'}
+        ]);
+        // can3L04, 1A-C10-15, 2N60-4 (type 1)
+        setNodeIframe('3INEQ', 1, 'https://coopmaths.fr/alea/?uuid=e7754&id=can3L04&n=2&d=10&i=1&cd=1&tip=0&uuid=e6c95&id=1A-C10-15&i=1&uuid=bc1e4&id=2N60-4&n=5&d=10&s=true&s2=1&i=1&cd=1&tip=0&v=eleve&es=21100000&title=In%25C3%25A9quations%2520du%2520premier%2520degr%25C3%25A9%2520avec%2520une%2520op%25C3%25A9ration');
+        // 2N60-4 (type 2), can2L05, can2L21, 2N60-4 (type 3-4)
+        setNodeIframe('3INEQ', 2, 'https://coopmaths.fr/alea/?uuid=96a78&id=can2L05&n=1&d=10&qcm=0&i=1&cd=1&tip=0&uuid=bc1e4&id=2N60-4&n=3&d=10&s=true&s2=2&i=1&cd=1&tip=0&uuid=94237&id=can2L21&n=2&d=10&qcm=0&i=1&cd=1&tip=0&uuid=bc1e4&id=2N60-4&n=3&d=10&s=true&s2=3-4&i=1&cd=1&tip=0&v=eleve&es=21100000&title=In%25C3%25A9quations%2520du%2520premier%2520degr%25C3%25A9%2520avec%2520plusieurs%2520op%25C3%25A9ration');
+
+        createHorizontalLine(5600, 'Quatrième année');
+        
+        createNode('4EQ2',"Équations du deuxième degré", 55, 5800, ['3Rac']);
+        setNodeLevels('4EQ2',[
+            { number: 1, title: 'Sans discriminant'},
+            { number: 2, title: 'Avec discriminant'},
+            { number: 3, title: 'Se ramener à la forme générale'},
+            { number: 4, title: 'À chaque équation sa méthode'}
+        ]);
+        // TODO Manque multiplier ou diviser avant Delta
+        // TODO Manque équations irrationnelles
+        // TODO Manque produit nul / 3e degré
+        // 1A-C10-1, 1A-C10-2
+        setNodeIframe('4EQ2', 1, 'https://coopmaths.fr/alea/?uuid=e1e6d&id=1A-C10-1&n=4&d=10&s=false&s2=true&s4=false&cd=1&tip=0&uuid=8d5ec&id=1A-C10-2&n=4&d=10&qcm=1&cd=1&tip=0&v=eleve&es=21100000&title=%25C3%2589quations%2520du%2520deuxi%25C3%25A8me%2520degr%25C3%25A9%2520sans%2520discriminant');
+        // 1AL20-10, 1AL23-21
+        setNodeIframe('4EQ2', 2, 'https://coopmaths.fr/alea/?uuid=731f0&id=1AL20-10&n=2&d=10&s=2&i=1&cd=1&tip=0&uuid=731f0&id=1AL20-10&n=2&d=10&s=3&i=1&cd=1&tip=0&uuid=cf78f&id=1AL23-21&n=5&d=10&i=1&cd=1&tip=0&v=eleve&es=21100000&title=R%25C3%25A9soudre%2520des%2520%25C3%25A9quations%2520du%2520deuxi%25C3%25A8me%2520degr%25C3%25A9%2520avec%2520discriminant');
+        // 1AL23-22 type équation 2, sol entiere, 1AL23-22 type équation 2, sol fraction ou irrationnelle, 1AL23-22 type équation 3-4, sol mélange
+        setNodeIframe('4EQ2', 3, 'https://coopmaths.fr/alea/?uuid=1be55&id=1AL23-22&n=4&d=10&s=4&s2=1&s3=2&cd=1&tip=0&uuid=1be55&id=1AL23-22&n=4&d=10&s=4&s2=2-3&s3=2&cd=1&tip=0&uuid=1be55&id=1AL23-22&n=4&d=10&s=4&s2=4&s3=3-4&cd=1&tip=0&v=eleve&es=21100000&title=Se%2520ramener%2520%25C3%25A0%2520la%2520forme%2520g%25C3%25A9n%25C3%25A9rale%2520des%2520%25C3%25A9quations%2520du%2520deuxi%25C3%25A8me%2520degr%25C3%25A9');
+        // 1AL23-22, 3L13 (type 8), 2N52-5
+        setNodeIframe('4EQ2', 4, 'https://coopmaths.fr/alea/?uuid=1be55&id=1AL23-22&alea=OwAs&uuid=f239f&id=3L13&alea=ffyQ&uuid=31017&id=2N52-5&alea=x2be&v=eleve&es=31100000&title=À%2520chaque%2520%25C3%25A9quation%2520sa%2520m%25C3%25A9thode');
+
+        createNode('4Facto2',"Factorisation du deuxième degré", 80, 6250, ['4EQ2','3FA']);
+        setNodeLevels('4Facto2',[
+            { number: 1, title: 'Factoriser le 2e degré'},
+            { number: 2, title: 'Plein de méthodes de factorisation'}
+        ]);
+        // TODO Manque simplification
+        // TODO Manque équations fractionnelles
+        // 1AL21-41
+        setNodeIframe('4Facto2', 1, 'https://coopmaths.fr/alea/?uuid=a8e1b&id=1AL21-41&n=5&d=10&i=1&cd=1&tip=0&v=eleve&es=21100000&title=Factoriser%2520un%2520polyn%25C3%25B4me%2520du%2520deuxi%25C3%25A8me%2520degr%25C3%25A9');
+        // 1AL21-41, 3L12-2
+        setNodeIframe('4Facto2', 2, 'https://coopmaths.fr/alea/?uuid=a8e1b&id=1AL21-41&n=5&d=10&cd=1&tip=0&uuid=c4b73&id=3L12-2&n=5&d=10&s=8&s2=1&s3=2&s4=1&s5=true&i=1&cd=1&tip=0&v=eleve&es=20100000&title=Plein%2520de%2520m%25C3%25A9thodes%2520de%2520factorisations%2520%21');
+
+        createNode('4INEQ2',"Inéquations du deuxième degré", 20, 6550, ['4Facto2','4EQ2','3INEQ']);
+        setNodeLevels('4INEQ2',[
+            { number: 1, title: 'Une inéquation générale du 2e degré'},
+            { number: 2, title: 'Du 1er degré avec tableau de signes'},
+            { number: 3, title: 'Utiliser le bon outil au bon moment'},
+            { number: 4, title: 'Vers plus d\'inéquations'},
+            { number: 5, title: 'Inéquations complexes'}
+        ]);
+        // TODO Manque équations plus complexes avec du 2e degré
+        // 1AL23-40
+        setNodeIframe('4INEQ2', 1, 'https://coopmaths.fr/alea/?uuid=77bcc&id=1AL23-40&n=5&d=10&cd=1&tip=0&v=eleve&es=20100000&title=R%25C3%25A9soudre%2520une%2520in%25C3%25A9quation%2520du%2520deuxi%25C3%25A8me%2520degr%25C3%25A9');
+        // 1A-C14-1, 1A-C14-4
+        setNodeIframe('4INEQ2', 2, 'https://coopmaths.fr/alea/?uuid=cf226&id=1A-C14-1&n=3&d=10&s=false&s2=true&s4=false&cd=1&tip=0&uuid=d7ba2&id=1A-C14-4&n=4&d=10&s=false&s2=false&s4=false&cd=1&tip=0&v=eleve&es=21100000&title=Du%25201er%2520degr%25C3%25A9%2520avec%2520tableau%2520de%2520signes');
+        // 1AL23-41, 1AL23-22, 1AL23-40, 3L13 (type 8), 2N60-4 (type 3-4)
+        setNodeIframe('4INEQ2', 3, 'https://coopmaths.fr/alea/?uuid=b9252&id=1AL23-41&n=6&d=10&i=1&cd=1&tip=0&uuid=bc1e4&id=2N60-4&i=1&uuid=1be55&id=1AL23-22&n=2&d=10&s=4&s2=4&s3=5&i=1&cd=1&tip=0&uuid=f239f&id=3L13&n=3&d=10&s=true&s2=8&s3=true&i=1&cd=1&tip=0&uuid=77bcc&id=1AL23-40&n=2&d=10&i=1&cd=1&tip=0&v=eleve&es=31100000&title=Utiliser%2520le%2520bon%2520outil%2520au%2520bon%2520moment');
+        // 2N61-2 (type 1-2-3-4), 2N61-4 (type 1-2-3)
+        setNodeIframe('4INEQ2', 4, 'https://coopmaths.fr/alea/?uuid=fa1c5&id=2N61-2&n=2&d=10&s=1&s2=false&i=1&cd=1&tip=0&uuid=fa1c5&id=2N61-2&n=2&d=10&s=3&s2=false&i=1&cd=1&tip=0&uuid=fa1c5&id=2N61-2&n=2&d=10&s=2&s2=false&i=1&cd=1&tip=0&uuid=fa1c5&id=2N61-2&n=2&d=10&s=4&s2=false&i=1&cd=1&tip=0&uuid=0c09b&id=2N61-4&n=2&d=10&s=1&s2=false&i=1&cd=1&tip=0&uuid=0c09b&id=2N61-4&n=2&d=10&s=2&s2=false&i=1&cd=1&tip=0&uuid=0c09b&id=2N61-4&n=2&d=10&s=3&s2=false&i=1&cd=1&tip=0&v=eleve&es=21100000&title=Vers%2520plus%2520d%27in%25C3%25A9quations');
+        // 2N61-2 (type 5), 2N61-4 (type 4-5)
+        setNodeIframe('4INEQ2', 5, 'https://coopmaths.fr/alea/?uuid=fa1c5&id=2N61-2&n=2&d=10&s=5&s2=false&i=1&cd=1&tip=0&uuid=0c09b&id=2N61-4&n=2&d=10&s=4&s2=false&i=1&cd=1&tip=0&uuid=0c09b&id=2N61-4&n=3&d=10&s=5&s2=false&i=1&cd=1&tip=0&v=eleve&es=21100000&title=In%25C3%25A9quations%2520complexes');
+
+        // createHorizontalLine(6900,"Cinquième année")
+
+        // createNode('5PR',"Puissances rationnelles", 5, 7000, ['3PE']);
+        // setNodeLevels('5PR',[
+        //     { number: 1, title: 'Niveau 1'},
+        //     { number: 2, title: 'Niveau 2'},
+        //     { number: 3, title: 'Niveau 3'},
+        //     { number: 4, title: 'Niveau 4'},
+        //     { number: 5, title: 'Niveau 5'}
+        // ]);
+        // setNodeIframe('5PR', 1, 'url');
+
+        // createNode('5Lima',"Limites en un réel", 95, 7400, ['4Facto2','4INEQ2','3FA']);
+        // setNodeLevels('5Lima',[
+        //     { number: 1, title: 'Niveau 1'},
+        //     { number: 2, title: 'Niveau 2'},
+        //     { number: 3, title: 'Niveau 3'},
+        //     { number: 4, title: 'Niveau 4'},
+        //     { number: 5, title: 'Niveau 5'}
+        // ]);
+        // setNodeIframe('5Lima', 1, 'url');
+
+        // createNode('5Liminf',"Limites en l'infini", 48, 7700, ['4Facto2']);
+        // setNodeLevels('5Liminf',[
+        //     { number: 1, title: 'Niveau 1'},
+        //     { number: 2, title: 'Niveau 2'},
+        //     { number: 3, title: 'Niveau 3'},
+        //     { number: 4, title: 'Niveau 4'},
+        //     { number: 5, title: 'Niveau 5'}
+        // ]);
+        // setNodeIframe('5Liminf', 1, 'url');
+
+        // createNode('5COMP',"Composition de fonctions", 30, 8100, []);
+        // setNodeLevels('5COMP',[
+        //     { number: 1, title: 'Niveau 1'},
+        //     { number: 2, title: 'Niveau 2'},
+        //     { number: 3, title: 'Niveau 3'},
+        //     { number: 4, title: 'Niveau 4'},
+        //     { number: 5, title: 'Niveau 5'}
+        // ]);
+        // setNodeIframe('5COMP', 1, 'url');
+
+        // createNode('5Deriv',"Dérivées", 70, 8600, ['5COMP','5PR','4INEQ2','4Facto2','5Lima']);
+        // setNodeLevels('5Deriv',[
+        //     { number: 1, title: 'Niveau 1'},
+        //     { number: 2, title: 'Niveau 2'},
+        //     { number: 3, title: 'Niveau 3'},
+        //     { number: 4, title: 'Niveau 4'},
+        //     { number: 5, title: 'Niveau 5'}
+        // ]);
+        // setNodeIframe('5Deriv', 1, 'url');
+
+
+        // createHorizontalLine(9000,"Sixième année")
+
+
+        // createNode('6Exp',"Exponentielles", 5, 9100, ['5PR']);
+        // setNodeLevels('6Exp',[
+        //     { number: 1, title: 'Niveau 1'},
+        //     { number: 2, title: 'Niveau 2'},
+        //     { number: 3, title: 'Niveau 3'},
+        //     { number: 4, title: 'Niveau 4'},
+        //     { number: 5, title: 'Niveau 5'}
+        // ]);
+        // setNodeIframe('6Exp2', 1, 'url');
+
+        // createNode('6log',"Logarithmes", 55, 9550, ['6Exp','5COMP']);
+        // setNodeLevels('6log',[
+        //     { number: 1, title: 'Niveau 1'},
+        //     { number: 2, title: 'Niveau 2'},
+        //     { number: 3, title: 'Niveau 3'},
+        //     { number: 4, title: 'Niveau 4'},
+        //     { number: 5, title: 'Niveau 5'}
+        // ]);
+        // setNodeIframe('6log', 1, 'url');
+
+        // createNode('6EQexplog',"Équations exp/log", 35, 10050, ['6log']);
+        // setNodeLevels('6EQexplog',[
+        //     { number: 1, title: 'Niveau 1'},
+        //     { number: 2, title: 'Niveau 2'},
+        //     { number: 3, title: 'Niveau 3'},
+        //     { number: 4, title: 'Niveau 4'},
+        //     { number: 5, title: 'Niveau 5'}
+        // ]);
+        // setNodeIframe('6EQexplog', 1, 'url');
+
+        // createNode('6Derivexplog',"Dérivées exp/log", 80, 10350, ['5Deriv','6log']);
+        // setNodeLevels('6Derivexplog',[
+        //     { number: 1, title: 'Niveau 1'},
+        //     { number: 2, title: 'Niveau 2'},
+        //     { number: 3, title: 'Niveau 3'},
+        //     { number: 4, title: 'Niveau 4'},
+        //     { number: 5, title: 'Niveau 5'}
+        // ]);
+        // setNodeIframe('6Derivexplog', 1, 'url');
+
+        // createNode('6Prim',"Primitives directes", 49, 10800, ['6Derivexplog']);
+        // setNodeLevels('6Prim',[
+        //     { number: 1, title: 'Niveau 1'},
+        //     { number: 2, title: 'Niveau 2'},
+        //     { number: 3, title: 'Niveau 3'},
+        //     { number: 4, title: 'Niveau 4'},
+        //     { number: 5, title: 'Niveau 5'}
+        // ]);
+        // setNodeIframe('6Prim', 1, 'url');
+
+
+        // createNode('6Chgt',"Primitives par changement de variable", 15, 11150, ['6Prim']);
+        // setNodeLevels('6Chgt',[
+        //     { number: 1, title: 'Niveau 1'},
+        //     { number: 2, title: 'Niveau 2'},
+        //     { number: 3, title: 'Niveau 3'},
+        //     { number: 4, title: 'Niveau 4'},
+        //     { number: 5, title: 'Niveau 5'}
+        // ]);
+        // setNodeIframe('6Chgt', 1, 'url');
+
+        // createNode('6Parties',"Primitives par parties", 85, 11150, ['6Chgt','6Prim']);
+        // setNodeLevels('6Parties',[
+        //     { number: 1, title: 'Niveau 1'},
+        //     { number: 2, title: 'Niveau 2'},
+        //     { number: 3, title: 'Niveau 3'},
+        //     { number: 4, title: 'Niveau 4'},
+        //     { number: 5, title: 'Niveau 5'}
+        // ]);
+        // setNodeIframe('6Parties', 1, 'url');
+
+        // createHorizontalLine(11450,"CESS")
+
+        // CANVAS
+        // createNode('code',"Titre", x, y, ['prerequis']);
+        // setNodeLevels('code',[
+        //     { number: 1, title: 'Niveau 1'},
+        //     { number: 2, title: 'Niveau 2'},
+        //     { number: 3, title: 'Niveau 3'},
+        //     { number: 4, title: 'Niveau 4'},
+        //     { number: 5, title: 'Niveau 5'}
+        // ]);
+        // setNodeIframe('code', 1, 'url');
+
+        
+
+        /* -------------------------------------------------------------------
+         *  ÉTAPE 6 — Modifier les images des nœuds ici (optionnel)
+         *  setNodeImage(code, 'https://.../mon-image.png');
+         * ------------------------------------------------------------------- */
+
+        /* Exemple :
+        setNodeImage('A', 'https://example.com/icone-a.png');
+        */
+
+        /* Mise à jour initiale après configuration */
+        updateAllLockedStates();
+        updateUserProgress();
+        loadGameState();
+        refreshGraphSize();
+        applyMobileGraphFit();
+
+    </script>
+</body>
+<!-- Réinitialiser la sauvegarde :
+ Clic droit sur la navigateur → Inspecter → Console → Copier-coller le code ci-dessous et appuyer sur Entrée
+ localStorage.removeItem('math_academy_save'); location.reload();
+  -->
+</html>
+
