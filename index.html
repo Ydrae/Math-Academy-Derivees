@@ -2026,7 +2026,7 @@
 
 
         // TODO Formule simple : sin x/cos x, x^r
-        createNode('1Simple', 'Expressions simples', 50, 50, []);
+        createNode('1Simple', 'Expressions simples', 45, 50, []);
         setNodeLevels('1Simple', [
             { number: 1, title: 'Multiplication par un nombre' },
             { number: 2, title: 'Puissances négatives et fractionnaires' }
@@ -2037,7 +2037,7 @@
         
 
         // TODO : Additions simples : x^r + sin(x) etc
-        createNode('2Pol', 'Polynômes', 32, 450, ['1Simple']);
+        createNode('2Pol', 'Polynômes', 65, 450, ['1Simple']);
         setNodeLevels('2Pol', [
             { number: 1, title: 'Additions et soustractions' },
             { number: 2, title: 'Synthèse' }
@@ -2048,7 +2048,7 @@
         
         // TODO Produits non simplifiables
         // Simplifier via puissances, produits remarquables, ..
-        createNode('3PQ', 'Produits et quotients', 70, 850, ['2Pol']);
+        createNode('3PQ', 'Produits et quotients', 40, 850, ['2Pol']);
         setNodeLevels('3PQ', [
             { number: 1, title: 'Produits' },
             { number: 2, title: 'Quotients' }
@@ -2057,7 +2057,39 @@
         setNodeIframe('3PQ', 1, 'https://coopmaths.fr/alea/?uuid=1a60f&id=1AN14-5&n=2&d=10&s=1&i=1&cd=1&tip=0&uuid=1a60f&id=1AN14-5&n=3&d=10&s=3-4-5&i=1&cd=1&tip=0&v=eleve&es=211000000&title=D%25C3%25A9riv%25C3%25A9e%2520d%27un%2520produit');
         setNodeIframe('3PQ', 2, 'https://coopmaths.fr/alea/?uuid=b32f2&id=1AN14-6&n=4&d=10&s=2-4&s2=false&i=1&cd=1&tip=0&uuid=b32f2&id=1AN14-6&n=4&d=10&s=1-3&s2=false&i=1&cd=1&tip=0&uuid=1a60f&id=1AN14-5&n=2&d=10&s=2&i=1&cd=1&tip=0&v=eleve&es=211000000&title=D%25C3%25A9riv%25C3%25A9e%2520d%27un%2520quotient');
 
+        // TODO : Avec ln + combiner avec rac(x)  ou 1/x
+        createNode('4Exp', 'Exponentielles', 76, 1250, ['3PQ']);
+        setNodeLevels('4Exp', [
+            { number: 1, title: 'Une nouvelle formule' },
+            { number: 2, title: 'Produits avec exponentielles' },
+            { number: 3, title: 'Quotients avec exponentielles' }
+        ]);
+        // setUnlockUrl('1Simple', 'https://numbas.mathcentre.ac.uk/exam/48669/test-exam/embed/');
+        setNodeIframe('4Exp', 1, 'https://coopmaths.fr/alea/?uuid=e531b&id=1AN31-2&n=4&d=10&s=1&cd=1&tip=0&v=eleve&es=211000000&title=D%25C3%25A9riv%25C3%25A9e%2520de%2520e%255Ex');
+        setNodeIframe('4Exp', 2, 'https://coopmaths.fr/alea/?uuid=e531b&id=1AN31-2&n=4&d=10&s=2-5&cd=1&tip=0&v=eleve&es=211000000&title=Produits%2520avec%2520exponentielles');
+        setNodeIframe('4Exp', 3, 'https://coopmaths.fr/alea/?uuid=e531b&id=1AN31-2&n=4&d=10&s=3-6&cd=1&tip=0&uuid=e531b&id=1AN31-2&n=4&d=10&s=4-7&cd=1&tip=0&v=eleve&es=211000000&title=Quotients%2520avec%2520exponentielles');
         
+        // TODO avec plus que du premier degré
+        createNode('5Comp', 'Composées', 24, 1650, ['3PQ']);
+        setNodeLevels('5Comp', [
+            { number: 1, title: 'Composées avec une puissance' },
+            { number: 2, title: 'Composées avec d\'autres fonctions' }
+        ]);
+        // setUnlockUrl('1Simple', 'https://numbas.mathcentre.ac.uk/exam/48669/test-exam/embed/');
+        setNodeIframe('5Comp', 1, 'https://coopmaths.fr/alea/?uuid=3391d&id=1AN14-7&n=3&d=10&s=1&i=1&cd=1&tip=0&uuid=3391d&id=1AN14-7&n=2&d=10&s=2&i=1&cd=1&tip=0&uuid=3391d&id=1AN14-7&n=2&d=10&s=3&i=1&cd=1&tip=0&uuid=c4251&id=can1D23&n=2&d=10&qcm=0&i=1&cd=1&tip=0&v=eleve&es=211000000&title=Compos%25C3%25A9es%2520avec%2520une%2520puissance');
+        setNodeIframe('5Comp', 2, 'https://coopmaths.fr/alea/?uuid=f6ac7&id=f6ac7&n=4&d=10&qcm=0&i=1&cd=1&tip=0&lang=fr-CH&v=eleve&es=211000000&title=Compos%25C3%25A9es%2520avec%2520d%27autres%2520fonctions');
+
+
+        createNode('6CompExpLn', 'Composées avec exp et ln', 49, 2050, ['4Exp', '5Comp']);
+        setNodeLevels('6CompExpLn', [
+            { number: 1, title: 'Composées avec l\'exponentielle' },
+            { number: 2, title: 'Composées avec le logarithme népérien' }
+        ]);
+        // setUnlockUrl('1Simple', 'https://numbas.mathcentre.ac.uk/exam/48669/test-exam/embed/');
+        setNodeIframe('6CompExpLn', 1, 'https://coopmaths.fr/alea/?uuid=0e5fa&id=1AN31-3&n=4&d=10&s=1-2&i=1&cd=1&tip=0&uuid=0e5fa&id=1AN31-3&n=2&d=10&s=3&i=1&cd=1&tip=0&v=eleve&es=211000000&title=Compos%25C3%25A9es%2520avec%2520l%27exponentielle');
+        setNodeIframe('6CompExpLn', 2, 'https://coopmaths.fr/alea/?uuid=26af7&id=TSA5-32&n=2&d=10&s=false&s2=false&s4=false&i=1&cd=1&tip=0&uuid=25135&id=TSA5-31&n=5&d=10&s=4&cd=0&tip=0&v=eleve&es=211000000&title=Compos%25C3%25A9es%2520avec%2520le%2520logarithme%2520n%25C3%25A9p%25C3%25A9rien');
+        
+
 
         /* -------------------------------------------------------------------
          *  ÉTAPE 6 — Modifier les images des nœuds ici (optionnel)
