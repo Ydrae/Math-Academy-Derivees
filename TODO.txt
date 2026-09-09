@@ -1,0 +1,11 @@
+Expressions simple :
+// Formule simple : sin x/cos x, x^r
+Polynômes :
+// Additions simples : x^r + sin(x) etc
+Produits et quotients :
+// Produits non simplifiables
+// Simplifier via puissances, produits remarquables, ..
+Exponentielles :
+// Avec ln + combiner avec rac(x)  ou 1/x
+Composées :
+// avec plus que du premier degré
