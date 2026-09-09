@@ -1,11 +1,43 @@
 Expressions simple :
 // Formule simple : sin x/cos x, x^r
+// x^r avec r naturel
+// 3*sin(x)/cos(x)
+// a
+// x^r avec r négatif
 Polynômes :
 // Additions simples : x^r + sin(x) etc
+// 2x + a
+// 1/3x^2 + 4t
+// 2x³ + 3sqrt(x)
+// 3*x² + t/2
 Produits et quotients :
-// Produits non simplifiables
-// Simplifier via puissances, produits remarquables, ..
+// Produits et quotients non simplifiables
+// (3x+4)*t
+// 2sqrt(x)/(t-x^2)
+// t/(3x^2-2x+1)
+Simplifier via puissances, produits remarquables, ..
+// (2x³-3)²
+// (x^3)^2
 Exponentielles :
-// Avec ln + combiner avec rac(x)  ou 1/x
+// ln(x) + x² + 3x + 2
+// (4x^3+2)*ln(x)
+// t / ln(x)
+// ln(x) + 1/x + 3
+// sqrt(x)*ln(x)
 Composées :
-// avec plus que du premier degré
+// cos(2x)
+// (3x^2+x)^7
+// sqrt(t)
+// sin(2x^3+3x)
+
+// (3x+1)/sqrt(2x+5)
+// 2x^2*sin(2x+1)
+// sqrt(2x^2+3)+(x-1)^5
+// (3x-1)^2*(5x^2-2x)^7
+
+
+Composées avec exp et log
+// e^{x^2+1}+5x
+// (3x^2+2x-1)/ln^2(x)
+// sqrt{ln(x)}-e^x
+// sqrt(3x)*e^{2cos(x)+1}
