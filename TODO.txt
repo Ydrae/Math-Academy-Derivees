@@ -6,10 +6,10 @@ Expressions simple :
 // x^r avec r négatif
 Polynômes :
 // Additions simples : x^r + sin(x) etc
-// 2x + a
-// 1/3x^2 + 4t
-// 2x³ + 3sqrt(x)
-// 3*x² + t/2
+// a0*x + b0
+// 1/a1*x^r0 + a2*t0
+// a3*x^r1 + a4*sqrt(x)
+// a5*x^r2 + t1/a6
 Produits et quotients :
 // Produits et quotients non simplifiables
 // (3x+4)*t
