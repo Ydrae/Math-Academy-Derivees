@@ -2065,17 +2065,19 @@
         setNodeIframe('3PQ', 3, 'https://numbas.mathcentre.ac.uk/question/212763/derivees-de-produits-et-quotients-non-simplifiable/embed/');
         setNodeIframe('3PQ', 4, 'https://numbas.mathcentre.ac.uk/question/212782/derivees-avec-produits-et-quotients-evitables/embed/');
 
-        // TODO : Avec ln + combiner avec rac(x)  ou 1/x
-        createNode('4Exp', 'Exponentielles', 76, 1250, ['3PQ']);
+        
+        createNode('4Exp', 'Exponentielles et logarithmes', 76, 1250, ['3PQ']);
         setNodeLevels('4Exp', [
             { number: 1, title: 'Une nouvelle formule' },
             { number: 2, title: 'Produits avec exponentielles' },
-            { number: 3, title: 'Quotients avec exponentielles' }
+            { number: 3, title: 'Quotients avec exponentielles' },
+            { number: 4, title: 'Exp et ln variés'}
         ]);
         // setUnlockUrl('1Simple', 'https://numbas.mathcentre.ac.uk/exam/48669/test-exam/embed/');
         setNodeIframe('4Exp', 1, 'https://coopmaths.fr/alea/?uuid=e531b&id=1AN31-2&n=4&d=10&s=1&cd=1&tip=0&v=eleve&es=211000000&title=D%25C3%25A9riv%25C3%25A9e%2520de%2520e%255Ex');
         setNodeIframe('4Exp', 2, 'https://coopmaths.fr/alea/?uuid=e531b&id=1AN31-2&n=4&d=10&s=2-5&cd=1&tip=0&v=eleve&es=211000000&title=Produits%2520avec%2520exponentielles');
         setNodeIframe('4Exp', 3, 'https://coopmaths.fr/alea/?uuid=e531b&id=1AN31-2&n=4&d=10&s=3-6&cd=1&tip=0&uuid=e531b&id=1AN31-2&n=4&d=10&s=4-7&cd=1&tip=0&v=eleve&es=211000000&title=Quotients%2520avec%2520exponentielles');
+        setNodeIframe('4Exp', 4, 'https://numbas.mathcentre.ac.uk/question/212783/derivees-variees-d-exp-et-ln/embed/');
         
         // TODO avec plus que du premier degré
         createNode('5Comp', 'Composées', 24, 1650, ['3PQ']);
