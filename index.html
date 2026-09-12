@@ -140,49 +140,6 @@
         }
 
         /* ================================================================
-         * Compteur de déblocages en série — en haut à droite
-         * ================================================================ */
-        /* Modifier les couleurs du compteur « déblocages en série » ici */
-        #streak-counter {
-            position: fixed;
-            top: 25px;
-            right: 16px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            height: 38px;
-            padding: 0 22px;
-            background: linear-gradient(180deg, #eceff1 0%, #cfd8dc 100%);
-            border-radius: 999px;
-            box-shadow:
-                inset 0 1px 3px rgba(255, 255, 255, 0.75),
-                inset 0 -1px 3px rgba(0, 0, 0, 0.1),
-                0 0 0 2px #eceff1,
-                0 0 0 4px #b0bec5,
-                0 2px 6px rgba(0, 0, 0, 0.12);
-            z-index: 100;
-            font-size: 15px;
-            font-weight: bold;
-            color: #37474f;
-        }
-
-        .streak-flame {
-            font-size: 20px;
-            line-height: 1;
-        }
-
-        #streak-count {
-            font-size: 20px;
-            min-width: 1ch;
-        }
-
-        .streak-label {
-            font-weight: normal;
-            font-size: 13px;
-            color: #546e7a;
-        }
-
-        /* ================================================================
          * Graphe — zone de travail (parchemin / sentier de terre)
          * ================================================================ */
         /* Modifier les couleurs de la zone de travail ici */
@@ -588,10 +545,10 @@
         .modal--unlock h2 {
             margin: 0 0 18px;
             font-size: 18px;
-            line-height: 1.3;
+            line-height: 1.35;
             padding-right: 36px;
             color: #e65100;
-            white-space: nowrap;
+            white-space: normal;
         }
 
         .btn-debloquer {
@@ -608,7 +565,7 @@
             border: none;
             border-radius: 10px;
             cursor: pointer;
-            margin-bottom: 20px;
+            margin-bottom: 0;
             box-shadow: 0 5px 16px rgba(255, 107, 53, 0.4);
             letter-spacing: 0.3px;
             transition: transform 0.15s ease, box-shadow 0.15s ease;
@@ -624,61 +581,6 @@
         .btn-debloquer:hover {
             transform: translateY(-2px);
             box-shadow: 0 10px 28px rgba(255, 107, 53, 0.55);
-        }
-
-        .unlock-code-row {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            flex-wrap: nowrap;
-        }
-
-        .unlock-code-row label {
-            font-weight: bold;
-            white-space: nowrap;
-            color: #bf360c;
-        }
-
-        .unlock-code-row input {
-            flex: 0 0 auto;
-            width: 118px;
-            padding: 10px 10px;
-            font-size: 15px;
-            border: 2px solid #ffcc80;
-            border-radius: 8px;
-            background: #fff;
-        }
-
-        .unlock-code-row input:focus {
-            outline: none;
-            border-color: #ff9800;
-            box-shadow: 0 0 0 3px rgba(255, 152, 0, 0.25);
-        }
-
-        .btn-validate-code {
-            flex: 0 0 auto;
-            padding: 10px 14px;
-            font-size: 14px;
-            font-weight: bold;
-            color: #fff;
-            background: linear-gradient(180deg, #ffa726, #fb8c00);
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            box-shadow: 0 3px 10px rgba(251, 140, 0, 0.4);
-            white-space: nowrap;
-        }
-
-        .btn-validate-code:hover {
-            background: linear-gradient(180deg, #ffb74d, #f57c00);
-        }
-
-        .unlock-error {
-            color: #d84315;
-            font-size: 14px;
-            margin-top: 10px;
-            min-height: 20px;
-            font-weight: bold;
         }
 
         /* Modale iframe (format A4) */
@@ -724,15 +626,6 @@
             background: #43a047;
             border: none;
             cursor: pointer;
-        }
-
-        /* Ordinateur — champ code élargi, aligné avec le bouton Déblocage */
-        @media (min-width: 769px) {
-            .unlock-code-row input {
-                flex: 1 1 auto;
-                width: auto;
-                min-width: 118px;
-            }
         }
 
         @media (max-width: 768px) {
@@ -795,31 +688,6 @@
 
             .xp-bar__text {
                 font-size: 11px;
-            }
-
-            #streak-counter {
-                position: fixed;
-                top: 20px;
-                right: 10px;
-                left: auto;
-                bottom: auto;
-                z-index: 100;
-                height: 30px;
-                padding: 0 10px;
-                font-size: 12px;
-                gap: 5px;
-            }
-
-            .streak-flame {
-                font-size: 16px;
-            }
-
-            #streak-count {
-                font-size: 16px;
-            }
-
-            .streak-label {
-                font-size: 12px;
             }
 
             /* Extension au tap uniquement (pas au survol) */
@@ -906,7 +774,7 @@
             }
 
             .modal--unlock h2 {
-                white-space: nowrap;
+                white-space: normal;
                 font-size: 13px;
                 margin-bottom: 12px;
                 padding-right: 28px;
@@ -923,7 +791,7 @@
             .modal--unlock .btn-debloquer {
                 padding: 10px 12px;
                 font-size: 14px;
-                margin-bottom: 14px;
+                margin-bottom: 0;
                 gap: 8px;
             }
 
@@ -932,30 +800,6 @@
                 height: 18px;
             }
 
-            .modal--unlock .unlock-code-row {
-                gap: 6px;
-            }
-
-            .modal--unlock .unlock-code-row label {
-                font-size: 13px;
-            }
-
-            .modal--unlock .unlock-code-row input {
-                width: 88px;
-                padding: 7px 8px;
-                font-size: 13px;
-            }
-
-            .modal--unlock .btn-validate-code {
-                padding: 7px 10px;
-                font-size: 12px;
-            }
-
-            .modal--unlock .unlock-error {
-                font-size: 12px;
-                margin-top: 8px;
-                min-height: 16px;
-            }
             /* Iframe modale (format A4) — plein écran sur mobile, pas de bordure */
             .modal--content {
                 top: 0;
@@ -990,20 +834,10 @@
         </div>
     </div>
 
-    <!-- Compteur de déblocages consécutifs réussis -->
-    <div id="streak-counter">
-        <span class="streak-flame" aria-hidden="true">🔥</span>
-        <span id="streak-count">0</span>
-        <span class="streak-label">Déblocages en série</span>
-    </div>
-
     <h1>Math Academy</h1>
     <h2 class="subtitle">
         Maîtrise du calcul de dérivées
     </h2>
-    <p class="subtitle">
-        Temporaire : code d'ouverture 1 par défaut.
-    </p>
 
     <div id="graph-viewport">
         <div id="graph-container">
@@ -1024,20 +858,14 @@
 
     <div id="unlock-modal" class="modal modal--unlock hidden">
         <button class="modal__close" aria-label="Fermer">&times;</button>
-        <h2>Obtiens le code secret en réussisant le test !</h2>
+        <h2>Êtes-vous sûr de vouloir déverrouiller ce niveau sans passer par les prérequis?</h2>
         <button id="btn-debloquer" class="btn-debloquer" type="button">
             <svg class="btn-debloquer__icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
                 <path fill="currentColor" d="M7 10V7a5 5 0 0 1 10 0v3H7z"/>
                 <rect x="5" y="10" width="14" height="11" rx="2.5"/>
             </svg>
-            Déblocage
+            Déverrouiller
         </button>
-        <div class="unlock-code-row">
-            <label for="unlock-code-input">Code secret :</label>
-            <input id="unlock-code-input" type="text" autocomplete="off" placeholder="Entrez le code">
-            <button id="btn-validate-code" class="btn-validate-code" type="button">Valider</button>
-        </div>
-        <p id="unlock-error" class="unlock-error" aria-live="polite"></p>
     </div>
 
     <div id="content-modal" class="modal modal--content hidden">
@@ -1068,7 +896,6 @@
 
         const nodeRegistry = new Map();
         let activeUnlockNode = null;
-        let streakCount = 0;
         /* L'expérience ne diminue jamais : on mémorise le maximum atteint */
         let highestTotalXP = 0;
 
@@ -1080,9 +907,6 @@
         const overlay = document.getElementById('overlay');
         const unlockModal = document.getElementById('unlock-modal');
         const btnDebloquer = document.getElementById('btn-debloquer');
-        const btnValidateCode = document.getElementById('btn-validate-code');
-        const unlockCodeInput = document.getElementById('unlock-code-input');
-        const unlockError = document.getElementById('unlock-error');
         const contentModal = document.getElementById('content-modal');
         const contentModalHeader = document.getElementById('content-modal-header');
         const contentModalBody = document.getElementById('content-modal-body');
@@ -1090,7 +914,6 @@
         const userLevelEl = document.getElementById('user-level');
         const xpFillEl = document.getElementById('xp-fill');
         const xpTextEl = document.getElementById('xp-text');
-        const streakCountEl = document.getElementById('streak-count');
 
         /* Modifier l'espace après les titres de niveaux au survol ici */
         const LEVELS_EXPAND_EXTRA = 32;
@@ -1391,8 +1214,6 @@
                 state: startsUnlocked ? NODE_STATE.UNLOCKED : NODE_STATE.LOCKED,
                 currentLevel: startsUnlocked ? 1 : null,
                 levels: [{ number: 1, title: 'Niveau 1' }],
-                unlockCode: '1',
-                unlockUrl: '',
                 iframeByLevel: {},
                 expandDirection: 'right',
                 imageUrl: null,
@@ -1438,27 +1259,11 @@
                     node.currentLevel = 1;
                 }
                 renderNodeElement(node);
+                autoUnlockFromPrerequisites();
                 updateUserProgress();
             }
         }
 
-        function setUnlockCode(code, secretCode) {
-            const node = nodeRegistry.get(code);
-            if (!node) {
-                console.warn('setUnlockCode : nœud « ' + code + ' » introuvable.');
-                return;
-            }
-            node.unlockCode = String(secretCode);
-        }
-
-        function setUnlockUrl(code, url) {
-            const node = nodeRegistry.get(code);
-            if (!node) {
-                console.warn('setUnlockUrl : nœud « ' + code + ' » introuvable.');
-                return;
-            }
-            node.unlockUrl = url;
-        }
         /* Modifier l'image affichée sur un nœud ici (optionnel) */
         function setNodeImage(code, imageUrl) {
             const node = nodeRegistry.get(code);
@@ -1651,6 +1456,7 @@
         function selectLevel(nodeData, levelNumber) {
             nodeData.currentLevel = levelNumber;
             updateNodeVisuals(nodeData);
+            autoUnlockFromPrerequisites();
             updateUserProgress();
             saveGameState();
 
@@ -1735,10 +1541,6 @@
             xpTextEl.textContent = xpInBar + ' / ' + XP_PER_USER_LEVEL;
         }
 
-        function updateStreakDisplay() {
-            streakCountEl.textContent = streakCount;
-        }
-
 
         /* -------------------------------------------------------------------
          *  Persistance locale (localStorage)
@@ -1753,7 +1555,6 @@
             });
             localStorage.setItem(SAVE_KEY, JSON.stringify({
                 highestTotalXP: highestTotalXP,
-                streakCount: streakCount,
                 nodes: nodes
             }));
         }
@@ -1767,9 +1568,6 @@
 
                 if (typeof data.highestTotalXP === 'number') {
                     highestTotalXP = data.highestTotalXP;
-                }
-                if (typeof data.streakCount === 'number') {
-                    streakCount = data.streakCount;
                 }
 
                 if (data.nodes && typeof data.nodes === 'object') {
@@ -1790,10 +1588,9 @@
                     });
                 }
 
+                autoUnlockFromPrerequisites();
                 updateUserProgress();
-                updateStreakDisplay();
-                updateAllLockedStates();
-                drawConnections();
+                saveGameState();
             } catch (error) {
                 console.warn('Impossible de charger la sauvegarde locale.', error);
             }
@@ -1801,7 +1598,8 @@
 
 
         /* -------------------------------------------------------------------
-         *  Déverrouillage (validation manuelle + cascade prérequis)
+         *  Déverrouillage (automatique si un prérequis est au niveau max,
+         *  ou manuel avec cascade des prérequis)
          * ------------------------------------------------------------------- */
         function unlockNode(nodeData) {
             if (nodeData.state === NODE_STATE.UNLOCKED) return;
@@ -1818,63 +1616,52 @@
             unlockNode(nodeData);
         }
 
-        function openUnlockModal(nodeData) {
-            activeUnlockNode = nodeData;
-            unlockCodeInput.value = '';
-            unlockError.textContent = '';
-            showModal(unlockModal);
-            unlockCodeInput.focus();
+        function isNodeAtMaxActiveLevel(node) {
+            return node &&
+                node.state === NODE_STATE.UNLOCKED &&
+                node.currentLevel != null &&
+                node.currentLevel >= node.levels.length;
         }
 
-        /* Validation uniquement au clic sur « Valider » (ou Entrée) */
-        function validateUnlockCode() {
-            if (!activeUnlockNode) return;
+        function hasMaxedPrerequisite(nodeData) {
+            return nodeData.prerequisites.some(function (parentCode) {
+                return isNodeAtMaxActiveLevel(nodeRegistry.get(parentCode));
+            });
+        }
 
-            if (unlockCodeInput.value === activeUnlockNode.unlockCode) {
-                streakCount += 1;
-                updateStreakDisplay();
-                unlockNodeAndPrerequisites(activeUnlockNode);
-                updateAllLockedStates();
-                updateUserProgress();
-                closeAllModals();
-                refreshGraphSize();
-                drawConnections();
-                saveGameState();
-            } else {
-                streakCount = 0;
-                updateStreakDisplay();
-                unlockError.textContent = 'Code incorrect. Compteur remis à zéro.';
-                saveGameState();
+        /* Un nœud déverrouillé le reste, même si plus aucun prérequis n'est au max. */
+        function autoUnlockFromPrerequisites() {
+            let changed = true;
+            while (changed) {
+                changed = false;
+                nodeRegistry.forEach(function (node) {
+                    if (node.state === NODE_STATE.LOCKED && hasMaxedPrerequisite(node)) {
+                        unlockNode(node);
+                        changed = true;
+                    }
+                });
             }
+            updateAllLockedStates();
+            refreshGraphSize();
+            drawConnections();
+        }
+
+        function openUnlockModal(nodeData) {
+            activeUnlockNode = nodeData;
+            showModal(unlockModal);
         }
 
         btnDebloquer.addEventListener('click', function () {
-            if (!activeUnlockNode || !activeUnlockNode.unlockUrl) {
-                unlockError.textContent = 'Aucun site de déverrouillage configuré pour ce nœud.';
-                return;
-            }
-            unlockError.textContent = '';
-            openUnlockTestIframe(activeUnlockNode);
-        });
-
-        btnValidateCode.addEventListener('click', validateUnlockCode);
-
-        unlockCodeInput.addEventListener('keydown', function (event) {
-            if (event.key === 'Enter') validateUnlockCode();
+            if (!activeUnlockNode) return;
+            unlockNodeAndPrerequisites(activeUnlockNode);
+            autoUnlockFromPrerequisites();
+            updateUserProgress();
+            closeAllModals();
+            saveGameState();
         });
 
 
         /* --- Modale iframe --- */
-        function buildIframeHtml(url) {
-            return '<iframe src="' + url + '" width="100%" height="100%" frameborder="0" allowfullscreen></iframe>';
-        }
-
-        function openUnlockTestIframe(nodeData) {
-            contentModalHeader.textContent = nodeData.title + ' · Déblocage';
-            contentModalBody.innerHTML = buildIframeHtml(nodeData.unlockUrl);
-            showModal(contentModal);
-        }
-
         function openContentModal(nodeData, levelNumber) {
             const levelInfo = nodeData.levels.find(function (l) { return l.number === levelNumber; });
             const levelLabel = levelInfo
@@ -1907,36 +1694,24 @@
             activeUnlockNode = null;
         }
 
-        function closeContentModal() {
-            contentModal.classList.add('hidden');
-            contentModalBody.innerHTML = '';
-            contentModalHeader.textContent = '';
-            if (activeUnlockNode && !unlockModal.classList.contains('hidden')) {
-                overlay.classList.remove('hidden');
-            } else if (!activeUnlockNode || unlockModal.classList.contains('hidden')) {
-                overlay.classList.add('hidden');
-            }
-        }
-
         document.addEventListener('click', function (event) {
             if (!isMobileLayout()) return;
             if (event.target.closest('.node-wrapper')) return;
             if (event.target.closest('.modal')) return;
             if (event.target.closest('#user-hud')) return;
-            if (event.target.closest('#streak-counter')) return;
             collapseAllExpandedNodes();
         });
 
-        overlay.addEventListener('click', closeAllModals);
+        overlay.addEventListener('click', function () {
+            if (!contentModal.classList.contains('hidden')) {
+                return;
+            }
+            closeAllModals();
+        });
         document.querySelectorAll('.modal__close').forEach(function (button) {
             button.addEventListener('click', function (event) {
                 event.stopPropagation();
-                if (button.closest('#content-modal') && activeUnlockNode &&
-                    !unlockModal.classList.contains('hidden')) {
-                    closeContentModal();
-                } else {
-                    closeAllModals();
-                }
+                closeAllModals();
             });
         });
         contentModalFooterClose.addEventListener('click', closeAllModals);
@@ -2020,7 +1795,8 @@
          *  createNode(code, titre, x, y, [prérequis]);
          *  x est un pourcentage de la largeur de la zone brune (0 = bord gauche, 100 = bord droit) ; y reste en pixels.
          *  Sans prérequis [] → déverrouillé dès la création ; le niveau 1 ne compte pas pour l'XP.
-         *  Avec prérequis     → verrouillé (rouge ou orange foncé si prêts).
+         *  Avec prérequis     → verrouillé jusqu'à ce qu'un prérequis soit au niveau maximal,
+         *                       ou déverrouillage manuel (cascade des prérequis).
          *
          *  Espacer les nœuds pour que l'extension au survol ne se chevauche pas.
          * ------------------------------------------------------------------- */
@@ -2033,7 +1809,6 @@
             { number: 2, title: 'Application directe de formule'},
             { number: 3, title: 'Puissances négatives et fractionnaires' }
         ]);
-        // setUnlockUrl('1Simple', 'https://numbas.mathcentre.ac.uk/exam/48669/test-exam/embed/');
         setNodeIframe('1Simple', 1, 'https://coopmaths.fr/alea/?uuid=ec088&id=BP1FDEV03&n=2&d=10&s=1&s2=false&s3=false&cd=1&tip=0&uuid=ec088&id=BP1FDEV03&n=1&d=10&s=1&s2=true&s3=false&cd=1&tip=0&uuid=ebd8a&id=1AN14-1&n=4&d=10&s=2&cd=0&tip=0&v=eleve&es=211000000&title=Constante%252C%2520puissance%252C%2520multiplication%2520par%2520un%2520nombre');
         setNodeIframe('1Simple', 2, 'https://numbas.mathcentre.ac.uk/question/212713/derivees-simples/embed/');
         setNodeIframe('1Simple', 3, 'https://coopmaths.fr/alea/?uuid=c3202&n=1&d=10&qcm=0&i=1&cd=1&tip=0&uuid=ebd8a&id=1AN14-1&n=4&d=10&s=4-5&i=1&cd=0&tip=0&v=eleve&es=211000000&title=Puissances%2520n%25C3%25A9gatives%2520et%2520fractionnaires');
@@ -2046,7 +1821,6 @@
             { number: 2, title: 'Additions diverses' },
             { number: 3, title: 'Un peu de tout'}
         ]);
-        // setUnlockUrl('1Simple', 'https://numbas.mathcentre.ac.uk/exam/48669/test-exam/embed/');
         setNodeIframe('2Pol', 1, 'https://coopmaths.fr/alea/?uuid=ec088&id=BP1FDEV03&n=3&d=10&s=2-3-4&s2=false&s3=false&cd=1&tip=0&uuid=ec088&id=BP1FDEV03&n=1&d=10&s=2-3-4&s2=true&s3=false&cd=1&tip=0&uuid=a1ba2&id=can1D02&n=2&d=10&qcm=0&i=1&cd=1&tip=0&v=eleve&es=211000000&title=Polyn%25C3%25B4mes%2520et%2520%25C3%25A9valuation%2520en%2520un%2520point');
         setNodeIframe('2Pol', 2, 'https://coopmaths.fr/alea/?uuid=a83c0&id=1AN14-4&n=5&d=10&s=5&cd=1&tip=0&v=eleve&es=211000000&title=Synth%25C3%25A8se%2520%253A%2520polyn%25C3%25B4mes%2520et%2520puissances');
         setNodeIframe('2Pol', 3, 'https://numbas.mathcentre.ac.uk/question/212781/additions-simples-ok/embed/');
@@ -2058,8 +1832,6 @@
             { number: 3, title: 'Produits et quotients variés' },
             { number: 4, title: 'Produits et quotients évitables'}
         ]);
-        // setUnlockUrl('1Simple', 'https://numbas.mathcentre.ac.uk/exam/48669/test-exam/embed/');
-
         setNodeIframe('3PQ', 1, 'https://coopmaths.fr/alea/?uuid=1a60f&id=1AN14-5&n=2&d=10&s=1&i=1&cd=1&tip=0&uuid=1a60f&id=1AN14-5&n=3&d=10&s=3-4-5&i=1&cd=1&tip=0&v=eleve&es=211000000&title=D%25C3%25A9riv%25C3%25A9e%2520d%27un%2520produit');
         setNodeIframe('3PQ', 2, 'https://coopmaths.fr/alea/?uuid=b32f2&id=1AN14-6&n=4&d=10&s=2-4&s2=false&i=1&cd=1&tip=0&uuid=b32f2&id=1AN14-6&n=4&d=10&s=1-3&s2=false&i=1&cd=1&tip=0&uuid=1a60f&id=1AN14-5&n=2&d=10&s=2&i=1&cd=1&tip=0&v=eleve&es=211000000&title=D%25C3%25A9riv%25C3%25A9e%2520d%27un%2520quotient');
         setNodeIframe('3PQ', 3, 'https://numbas.mathcentre.ac.uk/question/212763/derivees-de-produits-et-quotients-non-simplifiable/embed/');
@@ -2073,7 +1845,6 @@
             { number: 3, title: 'Quotients avec exponentielles' },
             { number: 4, title: 'Exp et ln variés'}
         ]);
-        // setUnlockUrl('1Simple', 'https://numbas.mathcentre.ac.uk/exam/48669/test-exam/embed/');
         setNodeIframe('4Exp', 1, 'https://coopmaths.fr/alea/?uuid=e531b&id=1AN31-2&n=4&d=10&s=1&cd=1&tip=0&v=eleve&es=211000000&title=D%25C3%25A9riv%25C3%25A9e%2520de%2520e%255Ex');
         setNodeIframe('4Exp', 2, 'https://coopmaths.fr/alea/?uuid=e531b&id=1AN31-2&n=4&d=10&s=2-5&cd=1&tip=0&v=eleve&es=211000000&title=Produits%2520avec%2520exponentielles');
         setNodeIframe('4Exp', 3, 'https://coopmaths.fr/alea/?uuid=e531b&id=1AN31-2&n=4&d=10&s=3-6&cd=1&tip=0&uuid=e531b&id=1AN31-2&n=4&d=10&s=4-7&cd=1&tip=0&v=eleve&es=211000000&title=Quotients%2520avec%2520exponentielles');
@@ -2087,7 +1858,6 @@
             { number: 3, title: 'Des composées plus variées'},
             { number: 4, title: 'Des composées plus complexes'}
         ]);
-        // setUnlockUrl('1Simple', 'https://numbas.mathcentre.ac.uk/exam/48669/test-exam/embed/');
         setNodeIframe('5Comp', 1, 'https://coopmaths.fr/alea/?uuid=3391d&id=1AN14-7&n=3&d=10&s=1&i=1&cd=1&tip=0&uuid=3391d&id=1AN14-7&n=2&d=10&s=2&i=1&cd=1&tip=0&uuid=3391d&id=1AN14-7&n=2&d=10&s=3&i=1&cd=1&tip=0&uuid=c4251&id=can1D23&n=2&d=10&qcm=0&i=1&cd=1&tip=0&v=eleve&es=211000000&title=Compos%25C3%25A9es%2520avec%2520une%2520puissance');
         setNodeIframe('5Comp', 2, 'https://coopmaths.fr/alea/?uuid=f6ac7&id=f6ac7&n=4&d=10&qcm=0&i=1&cd=1&tip=0&lang=fr-CH&v=eleve&es=211000000&title=Compos%25C3%25A9es%2520avec%2520d%27autres%2520fonctions');
         setNodeIframe('5Comp', 3, 'https://numbas.mathcentre.ac.uk/question/212784/derivees-de-composees-plus-variees/embed/');
@@ -2100,7 +1870,6 @@
             { number: 2, title: 'Composées avec le logarithme népérien' },
             { number: 3, title: 'Composées plus complexes'}
         ]);
-        // setUnlockUrl('1Simple', 'https://numbas.mathcentre.ac.uk/exam/48669/test-exam/embed/');
         setNodeIframe('6CompExpLn', 1, 'https://coopmaths.fr/alea/?uuid=0e5fa&id=1AN31-3&n=4&d=10&s=1-2&i=1&cd=1&tip=0&uuid=0e5fa&id=1AN31-3&n=2&d=10&s=3&i=1&cd=1&tip=0&v=eleve&es=211000000&title=Compos%25C3%25A9es%2520avec%2520l%27exponentielle');
         setNodeIframe('6CompExpLn', 2, 'https://coopmaths.fr/alea/?uuid=26af7&id=TSA5-32&n=2&d=10&s=false&s2=false&s4=false&i=1&cd=1&tip=0&uuid=25135&id=TSA5-31&n=5&d=10&s=4&cd=0&tip=0&v=eleve&es=211000000&title=Compos%25C3%25A9es%2520avec%2520le%2520logarithme%2520n%25C3%25A9p%25C3%25A9rien');
         setNodeIframe('6CompExpLn', 3, 'https://numbas.mathcentre.ac.uk/question/212786/derivees-de-composees-exp-log-plus-complexes/embed');
@@ -2116,7 +1885,7 @@
         */
 
         /* Mise à jour initiale après configuration */
-        updateAllLockedStates();
+        autoUnlockFromPrerequisites();
         updateUserProgress();
         loadGameState();
         refreshGraphSize();
