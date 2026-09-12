@@ -2040,9 +2040,9 @@
         
 
         
-        createNode('2Pol', 'Polynômes', 65, 450, ['1Simple']);
+        createNode('2Pol', 'Additions et soustractions', 65, 450, ['1Simple']);
         setNodeLevels('2Pol', [
-            { number: 1, title: 'Additions et soustractions' },
+            { number: 1, title: 'Formules simples' },
             { number: 2, title: 'Additions diverses' },
             { number: 3, title: 'Un peu de tout'}
         ]);
@@ -2083,22 +2083,27 @@
         createNode('5Comp', 'Composées', 24, 1650, ['3PQ']);
         setNodeLevels('5Comp', [
             { number: 1, title: 'Composées avec une puissance' },
-            { number: 2, title: 'Composées avec d\'autres fonctions' }
+            { number: 2, title: 'Composées avec la trigonométrie' },
+            { number: 3, title: 'Des composées plus variées'},
+            { number: 4, title: 'Des composées plus complexes'}
         ]);
         // setUnlockUrl('1Simple', 'https://numbas.mathcentre.ac.uk/exam/48669/test-exam/embed/');
         setNodeIframe('5Comp', 1, 'https://coopmaths.fr/alea/?uuid=3391d&id=1AN14-7&n=3&d=10&s=1&i=1&cd=1&tip=0&uuid=3391d&id=1AN14-7&n=2&d=10&s=2&i=1&cd=1&tip=0&uuid=3391d&id=1AN14-7&n=2&d=10&s=3&i=1&cd=1&tip=0&uuid=c4251&id=can1D23&n=2&d=10&qcm=0&i=1&cd=1&tip=0&v=eleve&es=211000000&title=Compos%25C3%25A9es%2520avec%2520une%2520puissance');
         setNodeIframe('5Comp', 2, 'https://coopmaths.fr/alea/?uuid=f6ac7&id=f6ac7&n=4&d=10&qcm=0&i=1&cd=1&tip=0&lang=fr-CH&v=eleve&es=211000000&title=Compos%25C3%25A9es%2520avec%2520d%27autres%2520fonctions');
+        setNodeIframe('5Comp', 3, 'https://numbas.mathcentre.ac.uk/question/212784/derivees-de-composees-plus-variees/embed/');
+        setNodeIframe('5Comp', 4, 'https://numbas.mathcentre.ac.uk/question/212785/derivees-de-composees-plus-complexes/embed/');
 
 
         createNode('6CompExpLn', 'Composées avec exp et ln', 49, 2050, ['4Exp', '5Comp']);
         setNodeLevels('6CompExpLn', [
             { number: 1, title: 'Composées avec l\'exponentielle' },
-            { number: 2, title: 'Composées avec le logarithme népérien' }
+            { number: 2, title: 'Composées avec le logarithme népérien' },
+            { number: 3, title: 'Composées plus complexes'}
         ]);
         // setUnlockUrl('1Simple', 'https://numbas.mathcentre.ac.uk/exam/48669/test-exam/embed/');
         setNodeIframe('6CompExpLn', 1, 'https://coopmaths.fr/alea/?uuid=0e5fa&id=1AN31-3&n=4&d=10&s=1-2&i=1&cd=1&tip=0&uuid=0e5fa&id=1AN31-3&n=2&d=10&s=3&i=1&cd=1&tip=0&v=eleve&es=211000000&title=Compos%25C3%25A9es%2520avec%2520l%27exponentielle');
         setNodeIframe('6CompExpLn', 2, 'https://coopmaths.fr/alea/?uuid=26af7&id=TSA5-32&n=2&d=10&s=false&s2=false&s4=false&i=1&cd=1&tip=0&uuid=25135&id=TSA5-31&n=5&d=10&s=4&cd=0&tip=0&v=eleve&es=211000000&title=Compos%25C3%25A9es%2520avec%2520le%2520logarithme%2520n%25C3%25A9p%25C3%25A9rien');
-        
+        setNodeIframe('6CompExpLn', 3, 'https://numbas.mathcentre.ac.uk/question/212786/derivees-de-composees-exp-log-plus-complexes/embed');
 
 
         /* -------------------------------------------------------------------
